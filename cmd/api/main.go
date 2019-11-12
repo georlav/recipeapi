@@ -20,8 +20,11 @@ func main() {
 		panic(fmt.Sprintf("Failed to load configuration, %s", err))
 	}
 
-	logger := log.Logger{}
-	logger.SetFlags(log.LstdFlags | log.Lmicroseconds)
+	logger := log.New(
+		os.Stdout,
+		"",
+		log.Ldate|log.Ltime|log.Lshortfile,
+	)
 
 	// Enable debug output
 	if !cfg.APP.Debug {

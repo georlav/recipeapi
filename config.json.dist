@@ -1,12 +1,13 @@
 {
   "app": {
-    "debug": false
+    "debug": true
   },
   "server": {
     "scheme": "http",
+    "host": "127.0.0.1",
     "port": 8080,
-    "ReadTimeout": 30,
-    "WriteTimeout": 30,
-    "IdleTimeout": 30
+    "readTimeout": 30,
+    "writeTimeout": 30,
+    "idleTimeout": 30
   }
 }

@@ -31,12 +31,17 @@ func main() {
 		logger.SetOutput(ioutil.Discard)
 	}
 
+	http.Handle("/api", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"api": "v1"}`))
+	}))
+
 	s := http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,
 		WriteTimeout: time.Duration(cfg.Server.WriteTimeout) * time.Second,
 		IdleTimeout:  time.Duration(cfg.Server.IdleTimeout) * time.Second,
-		Handler:      nil,
+		//Handler:      nil,
+		Handler: nil,
 	}
 
 	// Start listening to incoming requests

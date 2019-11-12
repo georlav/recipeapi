@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -16,7 +17,15 @@ import (
 func main() {
 	cfg, err := config.Load("config.json")
 	if err != nil {
-		log.Fatalf("Failed to load configuration, %s", err)
+		panic(fmt.Sprintf("Failed to load configuration, %s", err))
+	}
+
+	logger := log.Logger{}
+	logger.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
+	// Enable debug output
+	if !cfg.APP.Debug {
+		logger.SetOutput(ioutil.Discard)
 	}
 
 	s := http.Server{
@@ -29,9 +38,9 @@ func main() {
 
 	// Start listening to incoming requests
 	go func() {
-		fmt.Printf("Started web server at %s://%s%s", cfg.Server.Scheme, cfg.Server.Host, s.Addr)
+		logger.Printf("Started web server at %s://%s%s", cfg.Server.Scheme, cfg.Server.Host, s.Addr)
 		if err := s.ListenAndServe(); err != http.ErrServerClosed {
-			log.Fatalf("Server error, %s", err)
+			logger.Fatalf("Server error, %s", err)
 		}
 	}()
 
@@ -41,9 +50,9 @@ func main() {
 	<-sigs
 
 	// Gracefully Shutdown server
-	fmt.Println("Application received a termination signal. Shutting down.")
+	logger.Println("Application received a termination signal. Shutting down.")
 
 	if err := s.Shutdown(context.Background()); err != nil {
-		log.Fatalf("Failed to gracefully shutdown http server, %s", err)
+		logger.Fatalf("Failed to gracefully shutdown http server, %s", err)
 	}
 }

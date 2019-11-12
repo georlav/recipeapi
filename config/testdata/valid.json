@@ -1,0 +1,12 @@
+{
+  "app": {
+    "debug": false
+  },
+  "server": {
+    "scheme": "http",
+    "port": 8080,
+    "ReadTimeout": 30,
+    "WriteTimeout": 30,
+    "IdleTimeout": 30
+  }
+}

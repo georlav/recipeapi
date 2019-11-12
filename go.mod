@@ -1,3 +1,3 @@
-module github.com/georlav/recipes
+module github.com/georlav/recipeapi
 
 go 1.13

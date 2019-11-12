@@ -9,21 +9,27 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/georlav/recipeapi/config"
 )
 
 func main() {
+	cfg, err := config.Load("config.json")
+	if err != nil {
+		log.Fatalf("Failed to load configuration, %s", err)
+	}
 
 	s := http.Server{
-		Addr:         "127.0.0.1:8080",
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  15 * time.Second,
+		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
+		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(cfg.Server.WriteTimeout) * time.Second,
+		IdleTimeout:  time.Duration(cfg.Server.IdleTimeout) * time.Second,
 		Handler:      nil,
 	}
 
 	// Start listening to incoming requests
 	go func() {
-		fmt.Println("Starting web server at", "http://127.0.0.1:8080")
+		fmt.Printf("Started web server at %s://%s%s", cfg.Server.Scheme, cfg.Server.Host, s.Addr)
 		if err := s.ListenAndServe(); err != http.ErrServerClosed {
 			log.Fatalf("Server error, %s", err)
 		}

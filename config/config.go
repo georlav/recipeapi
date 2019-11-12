@@ -22,11 +22,12 @@ type APP struct {
 // WriteTimeout is the maximum duration before timing out writes the response (seconds)
 // IdleTimeout is the maximum amount of time to wait for the next request when keep-alive is enabled (seconds)
 type Server struct {
-	Protocol     string
-	Port         int
-	ReadTimeout  int64
-	WriteTimeout int64
-	IdleTimeout  int64
+	Scheme       string `json:"scheme"`
+	Host         string `json:"host"`
+	Port         int    `json:"port"`
+	ReadTimeout  int64  `json:"readTimeout"`
+	WriteTimeout int64  `json:"writeTimeout"`
+	IdleTimeout  int64  `json:"idleTimeout"`
 }
 
 // Load loads a json config file and returns a config object

@@ -21,9 +21,7 @@ func main() {
 	}
 
 	logger := log.New(
-		os.Stdout,
-		"",
-		log.Ldate|log.Ltime|log.Lshortfile,
+		os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile,
 	)
 
 	// Enable debug output

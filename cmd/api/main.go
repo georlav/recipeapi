@@ -35,15 +35,15 @@ func main() {
 	// Initialize handlers
 	h := handler.NewHandler(cfg, logger)
 
-	// nolint:gocritic
-	// http.Handle("/", http.HandlerFunc(h.Recipes))
+	// Initialize api routes
+	r := handler.Routes(h)
 
 	s := http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,
 		WriteTimeout: time.Duration(cfg.Server.WriteTimeout) * time.Second,
 		IdleTimeout:  time.Duration(cfg.Server.IdleTimeout) * time.Second,
-		Handler:      http.HandlerFunc(h.Recipes),
+		Handler:      r,
 	}
 
 	// Start listening to incoming requests

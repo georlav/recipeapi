@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/georlav/recipeapi/handler"
+
 	"github.com/georlav/recipeapi/config"
 )
 
@@ -20,26 +22,28 @@ func main() {
 		panic(fmt.Sprintf("Failed to load configuration, %s", err))
 	}
 
+	// initialize logger
 	logger := log.New(
 		os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile,
 	)
 
-	// Enable debug output
+	// Disable logger from writing to stdout
 	if !cfg.APP.Debug {
 		logger.SetOutput(ioutil.Discard)
 	}
 
-	http.Handle("/api", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"api": "v1"}`))
-	}))
+	// Initialize handlers
+	h := handler.NewHandler(cfg, logger)
+
+	// nolint:gocritic
+	// http.Handle("/", http.HandlerFunc(h.Recipes))
 
 	s := http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,
 		WriteTimeout: time.Duration(cfg.Server.WriteTimeout) * time.Second,
 		IdleTimeout:  time.Duration(cfg.Server.IdleTimeout) * time.Second,
-		//Handler:      nil,
-		Handler: nil,
+		Handler:      http.HandlerFunc(h.Recipes),
 	}
 
 	// Start listening to incoming requests

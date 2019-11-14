@@ -1,8 +1,7 @@
 package recipe
 
-// Repository you need to impl the following methods to create
-// a recipe repo of any kind of provider
+// Repository you need to implement the following methods to create a recipe repository
 type Repository interface {
-	GetOne(id string) (Recipe, error)
-	GetMany(qp QueryParams) (Recipes, error)
+	GetOne(id string) (r Recipe, err error)
+	GetMany(qp QueryParams) (r Recipes, total int64, err error)
 }

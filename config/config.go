@@ -4,17 +4,36 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 )
 
 // Config object
 type Config struct {
 	APP    APP    `json:"app"`
-	Server Server `json:"Server"`
+	Server Server `json:"server"`
+	Mongo  Mongo  `json:"mongo"`
 }
 
 // APP holds general app configuration values
 type APP struct {
 	Debug bool `json:"debug"`
+}
+
+// Mongo holds the configuration for mongo database
+type Mongo struct {
+	Host                      string `json:"host"`
+	Port                      int16  `json:"port"`
+	Username                  string `json:"username"`
+	Password                  string `json:"password"`
+	PoolSize                  uint16 `json:"poolSize"`
+	Timeout                   time.Duration
+	SetServerSelectionTimeout time.Duration
+	SetConnectTimeout         time.Duration
+	SetSocketTimeout          time.Duration
+	SetMaxConnIdleTime        time.Duration
+	SetRetryWrites            bool   `json:"setRetryWrites"`
+	Database                  string `json:"database"`
+	RecipeCollection          string `json:"recipeCollection"`
 }
 
 // Server object holds the base configuration for the http server

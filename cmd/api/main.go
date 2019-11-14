@@ -33,11 +33,12 @@ func main() {
 	}
 
 	// Initialize handlers
-	h := handler.NewHandler(cfg, logger)
+	h := handler.NewHandler(nil, cfg, logger)
 
 	// Initialize api routes
 	r := handler.Routes(h)
 
+	// Initialize http server
 	s := http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,

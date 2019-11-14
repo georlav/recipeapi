@@ -26,7 +26,7 @@ type Mongo struct {
 	Username                  string `json:"username"`
 	Password                  string `json:"password"`
 	PoolSize                  uint16 `json:"poolSize"`
-	Timeout                   time.Duration
+	Timeout                   int64  `json:"timeout"`
 	SetServerSelectionTimeout time.Duration
 	SetConnectTimeout         time.Duration
 	SetSocketTimeout          time.Duration

@@ -18,7 +18,7 @@
     "database": "recipes",
     "recipeCollection": "recipe",
     "poolSize": 200,
-    "timeout": "15s",
+    "timeout": 15,
     "setRetryWrites": false
   }
 }

@@ -94,7 +94,7 @@ func recipeRepo() (*recipe.MongoRepo, error) {
 		Database:                  "recipes",
 		RecipeCollection:          "recipe",
 		PoolSize:                  100,
-		Timeout:                   15 * time.Second,
+		Timeout:                   15,
 		SetServerSelectionTimeout: 15 * time.Second,
 		SetConnectTimeout:         15 * time.Second,
 		SetSocketTimeout:          15 * time.Second,

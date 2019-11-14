@@ -11,6 +11,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/georlav/recipeapi/mongoclient"
+
+	"github.com/georlav/recipeapi/recipe"
+
 	"github.com/georlav/recipeapi/handler"
 
 	"github.com/georlav/recipeapi/config"
@@ -32,8 +36,19 @@ func main() {
 		logger.SetOutput(ioutil.Discard)
 	}
 
+	// Mongo client
+	client, err := mongoclient.NewClient(cfg.Mongo)
+	if err != nil {
+		log.Fatalf(`mongo client error, %s`, err)
+	}
+
+	// Initialize mongo
+	db := client.Database(cfg.Mongo.Database)
+	rCollection := db.Collection(cfg.Mongo.RecipeCollection)
+	rr := recipe.NewMongoRepo(rCollection, cfg.Mongo)
+
 	// Initialize handlers
-	h := handler.NewHandler(nil, cfg, logger)
+	h := handler.NewHandler(rr, cfg, logger)
 
 	// Initialize api routes
 	r := handler.Routes(h)

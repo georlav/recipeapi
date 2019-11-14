@@ -99,7 +99,9 @@ func paramsToFilters(qp QueryParams) bson.D {
 	// Filter by term
 	if qp.Term != "" {
 		orItems := bson.A{
-			bson.D{{"$text", bson.D{{"$search", qp.Term}}}},
+			bson.D{{Key: "$text", Value: bson.D{
+				{Key: "$search", Value: qp.Term}}},
+			},
 		}
 
 		orGroup := bson.D{{Key: "$or", Value: orItems}}
@@ -132,14 +134,14 @@ func (m MongoRepo) Insert(recipes ...Recipe) error {
 	updateOpts := options.Update()
 	updateOpts.SetUpsert(true)
 
-	for _, r := range recipes {
+	for i := range recipes {
 		if _, err := m.recipes.UpdateOne(
 			context.Background(),
 			bson.D{
-				{Key: "title", Value: r.Title},
+				{Key: "title", Value: recipes[i].Title},
 			},
 			bson.D{
-				{Key: "$set", Value: &r},
+				{Key: "$set", Value: recipes[i]},
 				{Key: "$setOnInsert", Value: bson.D{
 					{Key: "createdAt", Value: time.Now().UTC()},
 				}},

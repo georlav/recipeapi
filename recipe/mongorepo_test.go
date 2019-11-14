@@ -56,7 +56,7 @@ func TestMongoDBRepo_GetMany(t *testing.T) {
 	}{
 		{recipe.QueryParams{}, 2},
 		{recipe.QueryParams{Page: 1}, 2},
-		{recipe.QueryParams{Term: "test recipe 1"}, 1},
+		{recipe.QueryParams{Term: `"test recipe 2"`}, 1},
 		{recipe.QueryParams{Term: "test recipe"}, 2},
 		{recipe.QueryParams{Term: "recipe"}, 2},
 		{recipe.QueryParams{Term: "Spaghetti code"}, 0},
@@ -119,7 +119,7 @@ func recipeRepo() (*recipe.MongoRepo, error) {
 	iv := rCollection.Indexes()
 	_, err = iv.CreateOne(context.Background(), mongo.IndexModel{
 		Keys: bsonx.Doc{
-			{"title", bsonx.String("text")},
+			{Key: "title", Value: bsonx.String("text")},
 		},
 	})
 	if err != nil {

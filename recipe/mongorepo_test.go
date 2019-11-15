@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -87,19 +86,15 @@ func TestMongoDBRepo_GetMany(t *testing.T) {
 
 func recipeRepo() (*recipe.MongoRepo, error) {
 	cfg := config.Mongo{
-		Host:                      "127.0.0.1",
-		Port:                      27017,
-		Username:                  "root",
-		Password:                  "toor",
-		Database:                  "recipes",
-		RecipeCollection:          "recipe",
-		PoolSize:                  100,
-		Timeout:                   15,
-		SetServerSelectionTimeout: 15 * time.Second,
-		SetConnectTimeout:         15 * time.Second,
-		SetSocketTimeout:          15 * time.Second,
-		SetMaxConnIdleTime:        15 * time.Second,
-		SetRetryWrites:            false,
+		Host:             "127.0.0.1",
+		Port:             27017,
+		Username:         "root",
+		Password:         "toor",
+		Database:         "recipes-testdb",
+		RecipeCollection: "recipe",
+		PoolSize:         100,
+		Timeout:          15,
+		SetRetryWrites:   false,
 	}
 
 	// Init logger, discard output
@@ -113,7 +108,7 @@ func recipeRepo() (*recipe.MongoRepo, error) {
 	}
 
 	// Select a database collection and inject it to repo
-	db := client.Database(cfg.Database + "-testdb")
+	db := client.Database(cfg.Database)
 	rCollection := db.Collection(cfg.RecipeCollection)
 
 	iv := rCollection.Indexes()

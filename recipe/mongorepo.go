@@ -49,10 +49,10 @@ func (m MongoRepo) GetMany(qp QueryParams) (r Recipes, totalCount int64, err err
 	// find options
 	fOpts := options.Find()
 	fOpts.SetLimit(10)
-	if qp.Page == 1 {
-		qp.Page = 0
+	if qp.Page > 0 {
+		qp.Page--
 	}
-	fOpts.SetSkip(qp.Page * 10)
+	fOpts.SetSkip(qp.Page * *fOpts.Limit)
 
 	// filter options
 	filters := paramsToFilters(qp)

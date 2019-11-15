@@ -7,11 +7,11 @@ After cloning you need to create a configuration file based on config.json.dist 
 ## API usage
 Example:
 ```
-http://127.0.0.1:8080/api/?i=onions,garlic&q=omelet&p=3
+http://127.0.0.1:8080/api/?i=onions&i=garlic&q=omelet&p=3
 ```
  
 Parameter explanation:
-- i : comma delimited ingredients
+- i : ingredients
 - q : text search query
 - p : page number
 

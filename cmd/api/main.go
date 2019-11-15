@@ -11,6 +11,9 @@ import (
 	"syscall"
 	"time"
 
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/x/bsonx"
+
 	"github.com/georlav/recipeapi/mongoclient"
 
 	"github.com/georlav/recipeapi/recipe"
@@ -39,12 +42,22 @@ func main() {
 	// Mongo client
 	client, err := mongoclient.NewClient(cfg.Mongo)
 	if err != nil {
-		log.Fatalf(`mongo client error, %s`, err)
+		logger.Fatalf(`mongo client error, %s`, err)
 	}
 
 	// Initialize mongo
 	db := client.Database(cfg.Mongo.Database)
 	rCollection := db.Collection(cfg.Mongo.RecipeCollection)
+
+	// Create searchable index
+	iv := rCollection.Indexes()
+	if _, err := iv.CreateOne(context.Background(), mongo.IndexModel{
+		Keys: bsonx.Doc{{Key: "title", Value: bsonx.String("text")}},
+	}); err != nil {
+		logger.Fatal(err)
+	}
+
+	// initialize repository
 	rr := recipe.NewMongoRepo(rCollection, cfg.Mongo)
 
 	// Initialize handlers

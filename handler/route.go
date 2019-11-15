@@ -8,10 +8,10 @@ import (
 func Routes(h *Handler) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(
-	// Add here your global middleware
+		h.headersMiddleware,
 	)
 
-	// Product API handlers
+	// Api handlers
 	apiV1Prefix := "v1"
 	apiV1 := r.PathPrefix("/api/" + apiV1Prefix).Subrouter()
 	apiV1.HandleFunc("/recipe/{id}", nil).Methods("GET").Name("recipe")

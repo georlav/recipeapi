@@ -10,8 +10,6 @@ import (
 )
 
 func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
 	// Parse get params
 	q := r.URL.Query()
 	qp := recipe.QueryParams{Term: q.Get("q"), Ingredients: q["i"]}

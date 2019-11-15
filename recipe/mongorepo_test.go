@@ -53,13 +53,13 @@ func TestMongoDBRepo_GetMany(t *testing.T) {
 		params  recipe.QueryParams
 		results int
 	}{
-		{recipe.QueryParams{}, 2},
-		{recipe.QueryParams{Page: 1}, 2},
+		{recipe.QueryParams{}, 10},
+		{recipe.QueryParams{Page: 1}, 10},
 		{recipe.QueryParams{Term: `"test recipe 2"`}, 1},
-		{recipe.QueryParams{Term: "test recipe"}, 2},
-		{recipe.QueryParams{Term: "recipe"}, 2},
+		{recipe.QueryParams{Term: "test recipe"}, 10},
+		{recipe.QueryParams{Term: "recipe"}, 10},
 		{recipe.QueryParams{Term: "Spaghetti code"}, 0},
-		{recipe.QueryParams{Page: 2}, 0},
+		{recipe.QueryParams{Page: 2}, 5},
 	}
 
 	rr, err := recipeRepo()

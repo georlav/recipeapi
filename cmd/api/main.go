@@ -29,7 +29,7 @@ func main() {
 
 	// Start listening to incoming requests
 	go func() {
-		fmt.Printf("Started web server at %s://%s%s", cfg.Server.Scheme, cfg.Server.Host, s.Addr)
+		log.Printf("Started web server at %s://%s%s", cfg.Server.Scheme, cfg.Server.Host, s.Addr)
 		if err := s.ListenAndServe(); err != http.ErrServerClosed {
 			log.Fatalf("Server error, %s", err)
 		}
@@ -41,7 +41,7 @@ func main() {
 	<-sigs
 
 	// Gracefully Shutdown server
-	fmt.Println("Application received a termination signal. Shutting down.")
+	log.Println("Application received a termination signal. Shutting down.")
 
 	if err := s.Shutdown(context.Background()); err != nil {
 		log.Fatalf("Failed to gracefully shutdown http server, %s", err)

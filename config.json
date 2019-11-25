@@ -1,0 +1,24 @@
+{
+  "app": {
+    "debug": true
+  },
+  "server": {
+    "scheme": "http",
+    "host": "127.0.0.1",
+    "port": 8080,
+    "readTimeout": 30,
+    "writeTimeout": 30,
+    "idleTimeout": 30
+  },
+  "mongo": {
+    "host": "127.0.0.1",
+    "port": 27017,
+    "username": "root",
+    "password": "toor",
+    "database": "recipes",
+    "recipeCollection": "recipe",
+    "poolSize": 200,
+    "timeout": 15,
+    "setRetryWrites": false
+  }
+}

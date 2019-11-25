@@ -115,8 +115,8 @@ func paramsToFilters(qp QueryParams) bson.D {
 			orItems = append(orItems, bson.D{{Key: "ingredients", Value: qp.Ingredients[i]}})
 		}
 
-		orGroup := bson.D{{Key: "$or", Value: orItems}}
-		AndItems = append(AndItems, orGroup)
+		andGroup := bson.D{{Key: "$and", Value: orItems}}
+		AndItems = append(AndItems, andGroup)
 	}
 
 	filters := bson.D{}

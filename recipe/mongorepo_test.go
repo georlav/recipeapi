@@ -3,66 +3,80 @@ package recipe_test
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"os"
 	"testing"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/x/bsonx"
-
-	"github.com/georlav/recipeapi/mongoclient"
-
-	"github.com/georlav/recipeapi/recipe"
+	"time"
 
 	"github.com/georlav/recipeapi/config"
+	"github.com/georlav/recipeapi/mongoclient"
+	"github.com/georlav/recipeapi/recipe"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
-// Setup data for handlers related tests
+// Setup data for mongo related tests
 func TestMain(m *testing.M) {
-	mc, err := recipeRepo()
+	mc, col, err := recipeRepo()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	err = mc.Insert(
-		recipe.Recipe{
-			Title:       "test recipe 1",
-			URL:         "http://test1.dev",
-			Ingredients: []string{"in1", "in2"},
+	// Import 15 recipes
+	recipes := recipe.Recipes{}
+	for i := 1; i <= 15; i++ {
+		ingredients := []string{"in1", "in2", "in3"}
+		if i%2 == 0 {
+			ingredients = append(ingredients, "in4")
+		}
+
+		recipes = append(recipes, recipe.Recipe{
+			Title:       fmt.Sprintf("test recipe %d", i),
+			URL:         fmt.Sprintf("http://test%d.dev", i),
+			Ingredients: ingredients,
 			Thumbnail:   "http://img.recipepuppy.com/1.jpg",
-		},
-		recipe.Recipe{
-			Title:       "test recipe 2",
-			URL:         "http://test2.dev",
-			Ingredients: []string{"in3", "in4"},
-			Thumbnail:   "http://img.recipepuppy.com/2.jpg",
-		},
-	)
-	if err != nil {
+		})
+	}
+
+	if err = mc.Insert(recipes...); err != nil {
 		fmt.Printf(`Mongo Import error, %s`, err)
 		os.Exit(1)
 	}
 
-	os.Exit(m.Run())
+	ec := m.Run()
+
+	// remove imported data
+	if _, err = col.DeleteMany(context.Background(), bson.D{}); err != nil {
+		fmt.Printf(`Mongo mass delete error, %s`, err)
+		os.Exit(1)
+	}
+
+	os.Exit(ec)
 }
 
 func TestMongoDBRepo_GetMany(t *testing.T) {
 	testCases := []struct {
 		params  recipe.QueryParams
 		results int
+		total   int64
 	}{
-		{recipe.QueryParams{}, 10},
-		{recipe.QueryParams{Page: 1}, 10},
-		{recipe.QueryParams{Term: `"test recipe 2"`}, 1},
-		{recipe.QueryParams{Term: "test recipe"}, 10},
-		{recipe.QueryParams{Term: "recipe"}, 10},
-		{recipe.QueryParams{Term: "Spaghetti code"}, 0},
-		{recipe.QueryParams{Page: 2}, 5},
+		{recipe.QueryParams{}, 10, 15},
+		{recipe.QueryParams{Page: 1}, 10, 15},
+		{recipe.QueryParams{Page: 2}, 5, 15},
+		{recipe.QueryParams{Term: `"test recipe 2"`}, 1, 1},
+		{recipe.QueryParams{Term: "test recipe"}, 10, 15},
+		{recipe.QueryParams{Term: "recipe"}, 10, 15},
+		{recipe.QueryParams{Term: "recipe", Page: 2}, 5, 15},
+		{recipe.QueryParams{Term: "recipe", Page: 2, Ingredients: []string{"in1"}}, 5, 15},
+		{recipe.QueryParams{Term: "recipe", Page: 2, Ingredients: []string{"in1", "in2"}}, 5, 15},
+		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in5"}}, 0, 0},
+		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in1", "unknown"}}, 0, 0},
+		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in4"}}, 7, 7},
+		{recipe.QueryParams{Term: "Spaghetti code"}, 0, 0},
 	}
 
-	rr, err := recipeRepo()
+	rr, _, err := recipeRepo()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +85,9 @@ func TestMongoDBRepo_GetMany(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(fmt.Sprintf("Quering with %+v", tc.params), func(t *testing.T) {
-			s, _, err := rr.GetMany(tc.params)
+			t.Parallel()
+
+			s, c, err := rr.GetMany(tc.params)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -80,37 +96,39 @@ func TestMongoDBRepo_GetMany(t *testing.T) {
 				t.Fatalf("Should have found %d results got %d", tc.results, len(s))
 			}
 
+			if tc.total != c {
+				t.Fatalf("Should have found %d total results got %d", tc.total, c)
+			}
 		})
 	}
 }
 
-func recipeRepo() (*recipe.MongoRepo, error) {
+func recipeRepo() (*recipe.MongoRepo, *mongo.Collection, error) {
 	cfg := config.Mongo{
-		Host:             "127.0.0.1",
-		Port:             27017,
-		Username:         "root",
-		Password:         "toor",
-		Database:         "recipes-testdb",
-		RecipeCollection: "recipe",
-		PoolSize:         100,
-		Timeout:          15,
-		SetRetryWrites:   false,
+		Host:                      "127.0.0.1",
+		Port:                      27017,
+		Username:                  "root",
+		Password:                  "toor",
+		Database:                  "recipes",
+		RecipeCollection:          "recipe",
+		PoolSize:                  100,
+		Timeout:                   15 * time.Second,
+		SetServerSelectionTimeout: 15 * time.Second,
+		SetMaxConnIdleTime:        15 * time.Second,
+		SetRetryWrites:            false,
 	}
-
-	// Init logger, discard output
-	l := log.New(os.Stdout, "", 0)
-	l.SetOutput(ioutil.Discard)
 
 	// Mongo client
 	client, err := mongoclient.NewClient(cfg)
 	if err != nil {
-		return nil, fmt.Errorf(`mongo client error, %s`, err)
+		return nil, nil, fmt.Errorf(`mongo client error, %s`, err)
 	}
 
 	// Select a database collection and inject it to repo
-	db := client.Database(cfg.Database)
+	db := client.Database(cfg.Database + "-testdb")
 	rCollection := db.Collection(cfg.RecipeCollection)
 
+	// Create searchable index
 	iv := rCollection.Indexes()
 	_, err = iv.CreateOne(context.Background(), mongo.IndexModel{
 		Keys: bsonx.Doc{
@@ -118,8 +136,8 @@ func recipeRepo() (*recipe.MongoRepo, error) {
 		},
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return recipe.NewMongoRepo(rCollection, cfg), nil
+	return recipe.NewMongoRepo(rCollection, cfg), rCollection, nil
 }

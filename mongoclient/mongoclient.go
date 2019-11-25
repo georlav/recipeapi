@@ -13,8 +13,6 @@ import (
 
 // NewClient returns a new ready to use mongo client
 func NewClient(cfg config.Mongo) (*mongo.Client, error) {
-	// mongo client options, for aws managed mongoDB limits visit url
-	// https://docs.aws.amazon.com/documentdb/latest/developerguide/limits.html
 	mcOpts, err := clientOptions(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("invalid client options %w", err)
@@ -43,11 +41,11 @@ func clientOptions(cfg config.Mongo) (*options.ClientOptions, error) {
 		),
 	)
 
-	cOpts.SetServerSelectionTimeout(10 * time.Second)
-	cOpts.SetConnectTimeout(10 * time.Second)
-	cOpts.SetSocketTimeout(15 * time.Second)
-	cOpts.SetMaxConnIdleTime(30 * time.Second)
-	cOpts.SetRetryWrites(true)
+	cOpts.SetServerSelectionTimeout(cfg.SetServerSelectionTimeout * time.Second)
+	cOpts.SetConnectTimeout(cfg.SetConnectTimeout * time.Second)
+	cOpts.SetSocketTimeout(cfg.SetSocketTimeout * time.Second)
+	cOpts.SetMaxConnIdleTime(cfg.SetMaxConnIdleTime * time.Second)
+	cOpts.SetRetryWrites(cfg.SetRetryWrites)
 
 	if err := cOpts.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid client options: %w", err)

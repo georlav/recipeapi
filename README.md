@@ -15,10 +15,9 @@ retrieved from there.
  * 06-Repository
  * 07-Handler-real-data
  * 08-Middleware
- * 09-CICD
- 
+
 There are no notes/comments for each branch. All the above branches have been merged into master
- 
+
 ### Prerequisites
  * Go
  * Docker
@@ -29,6 +28,12 @@ mongo using the following command
 ```bash
 docker-compose up -d
 ```
+
+### Importing data
+When on master branch or after reaching 07-Handler-real-data branch you can import data by running the following command
+```bash
+make import
+``` 
 
 ### Configuration
 Most of the project values can be configured by editing config.json. File is located at the project root folder
@@ -49,6 +54,7 @@ make build
 ``` 
 
 ### Usage example
+Following link should work when you reach 07-Handler-real-data branch or when on master
 ```
 http://127.0.0.1:8080/api/?i=onions&i=garlic&q=omelet&p=1
 ```

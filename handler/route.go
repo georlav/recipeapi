@@ -14,7 +14,7 @@ func Routes(h *Handler) *mux.Router {
 	// Product API handlers
 	apiV1Prefix := "v1"
 	apiV1 := r.PathPrefix("/api/" + apiV1Prefix).Subrouter()
-	apiV1.HandleFunc("/recipe/{id}", nil).Methods("GET").Name("recipe")
+	apiV1.HandleFunc("/recipes/{id}", nil).Methods("GET").Name("recipe")
 	apiV1.HandleFunc("/recipes", h.Recipes).Methods("GET").Name("recipes")
 
 	// Health endpoint

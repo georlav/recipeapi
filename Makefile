@@ -1,5 +1,5 @@
 run:
-	GORACE="halt_on_error=1" go run -race cmd/recipes/main.go
+	GORACE="halt_on_error=1" go run -race cmd/api/main.go
 build:
 	go build -ldflags "-s -w" cmd/api/main.go
 test:

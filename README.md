@@ -6,6 +6,19 @@ and concepts.
 The exercise is based on [recipepuppy](http://www.recipepuppy.com/) free api. All the puppy recipes used were also 
 retrieved from there.
 
+### Project is divided into nine steps, each step has its own branch.
+ * 01-Server
+ * 02-Configuration
+ * 03-Logging
+ * 04-Handlers
+ * 05-Routes
+ * 06-Repository
+ * 07-Handler-real-data
+ * 08-Middleware
+ * 09-CICD
+ 
+There are no notes/comments for each branch. All the above branches have been merged into master
+ 
 ### Prerequisites
  * Go
  * Docker

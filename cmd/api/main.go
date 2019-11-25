@@ -15,11 +15,13 @@ import (
 )
 
 func main() {
+	// Load configuration from file
 	cfg, err := config.Load("config.json")
 	if err != nil {
 		panic(fmt.Sprintf("Failed to load configuration, %s", err))
 	}
 
+	// Initialize logger
 	logger := log.New(
 		os.Stdout,
 		"",
@@ -31,6 +33,7 @@ func main() {
 		logger.SetOutput(ioutil.Discard)
 	}
 
+	// Initialize server
 	s := http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,

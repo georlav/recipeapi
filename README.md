@@ -3,29 +3,51 @@ Simple api that serves recipes for puppies. This project is a step by step guide
 Go programming language. The purpose of the project is to demonstrate to newcommers the language basic features 
 and concepts.
 
-The api is based on [recipepuppy](http://www.recipepuppy.com/) free api, All puppy recipes used were also retrieved 
-from there.
+The exercise is based on [recipepuppy](http://www.recipepuppy.com/) free api. All the puppy recipes used were also 
+retrieved from there.
 
-## Getting Started
-Clone the project
-```git
-git clone https://github.com/georlav/recipeapi
+### Prerequisites
+ * Go
+ * Docker
+ * MongoDB 3.6
+
+API uses mongoDB as its main database, a docker compose file is provided for faster setup. You can start a container of
+mongo using the following command  
+```bash
+docker-compose up -d
 ```
 
+### Configuration
+Most of the project values can be configured by editing config.json. File is located at the project root folder
 
-
-
-After cloning you need to create a configuration file based on config.json.dist and name it config.json 
-
-### API usage
-Example:
+### Running the tests
+```bash
+make test
 ```
-http://127.0.0.1:8080/api/?i=onions,garlic&q=omelet&p=3
+
+### Running the project
+```bash
+make run
 ```
- 
-Parameter explanation:
-- i : comma delimited ingredients
+
+### Building the project
+```bash
+make build
+``` 
+
+### Usage example
+```
+http://127.0.0.1:8080/api/?i=onions&i=garlic&q=omelet&p=1
+```
+
+Available Parameters explanation:
+- i : ingredients
 - q : text search query
 - p : page number
 
+## Authors
+* **George Lavdanis** - *Initial work* - [georlav](https://github.com/georlav)
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 

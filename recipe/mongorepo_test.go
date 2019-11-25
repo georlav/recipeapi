@@ -26,10 +26,15 @@ func TestMain(m *testing.M) {
 	// Import 15 recipes
 	recipes := recipe.Recipes{}
 	for i := 1; i <= 15; i++ {
+		ingredients := []string{"in1", "in2", "in3"}
+		if i%2 == 0 {
+			ingredients = append(ingredients, "in4")
+		}
+
 		recipes = append(recipes, recipe.Recipe{
 			Title:       fmt.Sprintf("test recipe %d", i),
 			URL:         fmt.Sprintf("http://test%d.dev", i),
-			Ingredients: []string{"in1", "in2", "in3"},
+			Ingredients: ingredients,
 			Thumbnail:   "http://img.recipepuppy.com/1.jpg",
 		})
 	}
@@ -62,6 +67,12 @@ func TestMongoDBRepo_GetMany(t *testing.T) {
 		{recipe.QueryParams{Term: `"test recipe 2"`}, 1, 1},
 		{recipe.QueryParams{Term: "test recipe"}, 10, 15},
 		{recipe.QueryParams{Term: "recipe"}, 10, 15},
+		{recipe.QueryParams{Term: "recipe", Page: 2}, 5, 15},
+		{recipe.QueryParams{Term: "recipe", Page: 2, Ingredients: []string{"in1"}}, 5, 15},
+		{recipe.QueryParams{Term: "recipe", Page: 2, Ingredients: []string{"in1", "in2"}}, 5, 15},
+		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in5"}}, 0, 0},
+		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in1", "in5"}}, 10, 15},
+		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in4"}}, 7, 7},
 		{recipe.QueryParams{Term: "Spaghetti code"}, 0, 0},
 	}
 
@@ -74,13 +85,11 @@ func TestMongoDBRepo_GetMany(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(fmt.Sprintf("Quering with %+v", tc.params), func(t *testing.T) {
+			t.Parallel()
+
 			s, c, err := rr.GetMany(tc.params)
 			if err != nil {
 				t.Fatal(err)
-			}
-
-			if len(s) > 1 {
-				t.Log(s[0].Title)
 			}
 
 			if tc.results != len(s) {

@@ -17,12 +17,13 @@ import (
 )
 
 func main() {
+	// Load configuration from file
 	cfg, err := config.Load("config.json")
 	if err != nil {
 		panic(fmt.Sprintf("Failed to load configuration, %s", err))
 	}
 
-	// initialize logger
+	// Initialize logger
 	logger := log.New(
 		os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile,
 	)
@@ -35,9 +36,10 @@ func main() {
 	// Initialize handlers
 	h := handler.NewHandler(cfg, logger)
 
-	// Initialize api routes
+	// Initialize API routes
 	r := handler.Routes(h)
 
+	// Initialize server
 	s := http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		ReadTimeout:  time.Duration(cfg.Server.ReadTimeout) * time.Second,

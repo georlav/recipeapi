@@ -71,7 +71,7 @@ func TestMongoDBRepo_GetMany(t *testing.T) {
 		{recipe.QueryParams{Term: "recipe", Page: 2, Ingredients: []string{"in1"}}, 5, 15},
 		{recipe.QueryParams{Term: "recipe", Page: 2, Ingredients: []string{"in1", "in2"}}, 5, 15},
 		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in5"}}, 0, 0},
-		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in1", "in5"}}, 10, 15},
+		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in1", "unknown"}}, 0, 0},
 		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in4"}}, 7, 7},
 		{recipe.QueryParams{Term: "Spaghetti code"}, 0, 0},
 	}

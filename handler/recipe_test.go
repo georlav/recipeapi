@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/georlav/recipeapi/config"
@@ -22,11 +23,13 @@ func TestHandler_Recipes(t *testing.T) {
 	rh := http.HandlerFunc(h.Recipes)
 	rh.ServeHTTP(rr, req)
 
+	// Status should be 200
 	if http.StatusOK != rr.Code {
 		t.Fatalf("Wrong status code got %d expected %d", http.StatusOK, rr.Code)
 	}
 
-	//if actualLen := strings.Count(rr.Body.String(), "id"); tc.results != actualLen {
-	//	t.Fatalf("Expected %d results got %d", tc.results, actualLen)
-	//}
+	// Should find 10 times in response the word ingredients
+	if actualLen := strings.Count(rr.Body.String(), "ingredients"); actualLen != 10 {
+		t.Fatalf("Expected %d results got %d", 10, actualLen)
+	}
 }

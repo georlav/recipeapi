@@ -18,7 +18,11 @@
     "database": "recipes",
     "recipeCollection": "recipe",
     "poolSize": 200,
-    "timeout": "15s",
+    "timeout": 15,
+    "setServerSelectionTimeout": 15,
+    "setConnectTimeout": 15,
+    "setSocketTimeout": 15,
+    "setMaxConnIdleTime": 15,
     "setRetryWrites": false
   }
 }

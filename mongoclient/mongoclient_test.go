@@ -16,11 +16,10 @@ func TestNewMongoClient(t *testing.T) {
 		Username:                  "root",
 		Password:                  "toor",
 		Database:                  "recipes",
-		PoolSize:                  100,
+		RecipeCollection:          "recipe",
+		PoolSize:                  10,
 		Timeout:                   15 * time.Second,
 		SetServerSelectionTimeout: 15 * time.Second,
-		SetConnectTimeout:         15 * time.Second,
-		SetSocketTimeout:          15 * time.Second,
 		SetMaxConnIdleTime:        15 * time.Second,
 		SetRetryWrites:            false,
 	}

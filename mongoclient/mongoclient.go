@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+
 	"github.com/georlav/recipeapi/config"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,9 +26,11 @@ func NewClient(cfg config.Mongo) (*mongo.Client, error) {
 		return nil, fmt.Errorf("failed to initialize mongo client: %w", err)
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
 	// verify that the client can connect
-	err = mClient.Ping(context.Background(), nil)
-	if err != nil {
+	if err = mClient.Ping(ctx, readpref.PrimaryPreferred()); err != nil {
 		return nil, fmt.Errorf("failed to ping mongo DB, client options: %+v, error: %w", mcOpts, err)
 	}
 
@@ -42,8 +46,6 @@ func clientOptions(cfg config.Mongo) (*options.ClientOptions, error) {
 	)
 
 	cOpts.SetServerSelectionTimeout(cfg.SetServerSelectionTimeout * time.Second)
-	cOpts.SetConnectTimeout(cfg.SetConnectTimeout * time.Second)
-	cOpts.SetSocketTimeout(cfg.SetSocketTimeout * time.Second)
 	cOpts.SetMaxConnIdleTime(cfg.SetMaxConnIdleTime * time.Second)
 	cOpts.SetRetryWrites(cfg.SetRetryWrites)
 

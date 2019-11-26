@@ -1,3 +1,7 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/georlav/recipeapi)](https://goreportcard.com/report/github.com/georlav/recipeapi)
+[![](https://github.com/golangci/golangci-web/blob/master/src/assets/images/badge_a_plus_flat.svg)](https://golangci.com/r/github.com/georlav/recipeapi)
+[![](https://img.shields.io/badge/unicorn-approved-ff69b4.svg)](https://www.youtube.com/watch?v=9auOCbH5Ns4)
+
 # Puppy API rip off (exercise)
 Simple api that serves recipes for puppies. This project is a step by step guide on how to create a simple api using
 Go programming language. The purpose of the project is to demonstrate to newcommers the language basic features 

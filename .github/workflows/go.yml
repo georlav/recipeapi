@@ -12,14 +12,14 @@ jobs:
       uses: actions/setup-go@v1
       with:
         go-version: ${{ matrix.go-version }}
-        
-    - name: Start MongoDB
-      run:  sudo docker run --name recipesdb -d -p 27017:27017 mongo \
-       -e MONGO_INITDB_ROOT_USERNAME=root \
-       -e MONGO_INITDB_ROOT_PASSWORD=toor \
     
     - name: Checkout code
       uses: actions/checkout@v1
+    
+    - name: Start MongoDB
+      run:  sudo docker run --name recipesdb -d -p 27017:27017 mongo:3.6 \
+       -e MONGO_INITDB_ROOT_USERNAME=root \
+       -e MONGO_INITDB_ROOT_PASSWORD=toor \
       
     - name: Test
       run: go test ./...

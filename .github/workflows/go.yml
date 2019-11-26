@@ -7,6 +7,16 @@ jobs:
         go-version: [1.13.x]
         platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
+
+    services:
+      mongo:
+        image: mongo:3.6
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: toor
+
     steps:
     - name: Install Go
       uses: actions/setup-go@v1
@@ -15,11 +25,6 @@ jobs:
     
     - name: Checkout code
       uses: actions/checkout@v1
-    
-    - name: Start MongoDB
-      run:  sudo docker run --name recipesdb -d -p 27017:27017 mongo:3.6 \
-       -e MONGO_INITDB_ROOT_USERNAME=root \
-       -e MONGO_INITDB_ROOT_PASSWORD=toor \
       
     - name: Test
       run: go test ./...

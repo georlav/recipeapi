@@ -27,7 +27,8 @@ jobs:
       uses: actions/checkout@v1
       
     - name: Test
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
       run: go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic
-
-    - name: Upload Coverage
-      run: bash <(curl -s https://codecov.io/bash)

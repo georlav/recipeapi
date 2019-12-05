@@ -89,6 +89,7 @@ linters:
   disable:
     - whitespace
     - maligned
+    - gochecknoglobals
 
 run:
   skip-dirs:

@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/georlav/recipeapi/config"
+	"github.com/georlav/recipeapi/internal/config"
 )
 
 func main() {

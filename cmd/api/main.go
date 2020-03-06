@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	s := http.Server{
 		Addr:         "127.0.0.1:8080",
 		ReadTimeout:  15 * time.Second,

@@ -8,7 +8,6 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-
 	t.Run("Should successfully parse", func(t *testing.T) {
 		_, err := config.Load("testdata/valid.json")
 		if err != nil {

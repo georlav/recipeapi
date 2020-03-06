@@ -3,7 +3,7 @@ package handler
 import (
 	"log"
 
-	"github.com/georlav/recipeapi/config"
+	"github.com/georlav/recipeapi/internal/config"
 )
 
 type Handler struct {

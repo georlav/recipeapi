@@ -4,11 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/georlav/recipeapi/config"
+	"github.com/georlav/recipeapi/internal/config"
 )
 
 func TestLoad(t *testing.T) {
-
 	t.Run("Should successfully parse", func(t *testing.T) {
 		_, err := config.Load("testdata/valid.json")
 		if err != nil {

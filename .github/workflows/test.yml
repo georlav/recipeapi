@@ -1,12 +1,10 @@
 name: Test
-on: [push, pull_request]
+on: [push]
 jobs:
+
   test:
-    strategy:
-      matrix:
-        go-version: [1.13.x]
-        platform: [ubuntu-latest]
-    runs-on: ${{ matrix.platform }}
+    name: Tests
+    runs-on: ubuntu-latest
 
     services:
       mongo:
@@ -21,7 +19,7 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v1
       with:
-        go-version: ${{ matrix.go-version }}
+        go-version: 1.13
     
     - name: Checkout code
       uses: actions/checkout@v1

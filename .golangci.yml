@@ -42,10 +42,9 @@ linters-settings:
       - style
     disabled-checks:
       - hugeParam
-      - wrapperFunc
       - dupImport # https://github.com/go-critic/go-critic/issues/845
-      - ifElseChain
       - octalLiteral
+      - whyNoLint
   funlen:
     lines: 100
     statements: 50
@@ -59,36 +58,38 @@ linters:
     - dupl
     - errcheck
     - funlen
-    - gochecknoinits
+    #    - gochecknoglobals
+    #    - gochecknoinits
+    - gocognit
     - goconst
     - gocritic
     - gocyclo
+    - godox
     - gofmt
     - goimports
     - golint
+    #    - gomnd
+    - goprintffuncname
     - gosec
     - gosimple
     - govet
     - ineffassign
     - interfacer
     - lll
+    #    - maligned
     - misspell
     - nakedret
+    - prealloc
+    - rowserrcheck
     - scopelint
     - staticcheck
     - structcheck
     - stylecheck
     - unconvert
-    - unparam
+    #    - unparam
     - unused
     - varcheck
-    - gochecknoglobals
-    - gocognit
-    - godox
-    - prealloc
-  disable:
     - whitespace
-    - maligned
 
 run:
   skip-dirs:
@@ -97,15 +98,6 @@ run:
     - internal/cache/.*_test.go
 
 issues:
-  exclude-rules:
-    - path: internal/(cache|renameio)/
-      linters:
-        - lll
-        - gochecknoinits
-        - gocyclo
-        - funlen
-
-# golangci.com configuration
-# https://github.com/golangci/golangci/wiki/Configuration
-service:
-  golangci-lint-version: 1.20.x # use the fixed version to not introduce new linters unexpectedly
+  exclude:
+    - "shadow: declaration of \"err\""
+    - a blank import should be only in a main or test package

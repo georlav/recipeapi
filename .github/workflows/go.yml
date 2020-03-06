@@ -2,11 +2,8 @@ name: Test
 on: [push, pull_request]
 jobs:
   test:
-    strategy:
-      matrix:
-        go-version: [1.13.x]
-        platform: [ubuntu-latest]
-    runs-on: ${{ matrix.platform }}
+    name: Tests
+      runs-on: ubuntu-latest
 
     services:
       mongo:

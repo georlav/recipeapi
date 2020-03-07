@@ -1,4 +1,4 @@
-package mongoclient
+package mongodb
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// NewClient returns a new ready to use mongo client
-func NewClient(cfg config.Mongo) (*mongo.Client, error) {
+// New returns a new ready to use mongo client
+func New(cfg config.Mongo) (*mongo.Client, error) {
 	mcOpts, err := clientOptions(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("invalid client options %w", err)

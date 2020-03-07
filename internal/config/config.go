@@ -12,6 +12,7 @@ type Config struct {
 	APP    APP    `json:"app"`
 	Server Server `json:"server"`
 	Mongo  Mongo  `json:"mongo"`
+	MySQL  MySQL  `json:"mysql"`
 }
 
 // APP holds general app configuration values
@@ -32,6 +33,14 @@ type Mongo struct {
 	SetRetryWrites            bool          `json:"setRetryWrites"`
 	Database                  string        `json:"database"`
 	RecipeCollection          string        `json:"recipeCollection"`
+}
+
+type MySQL struct {
+	Host     string
+	Port     int16
+	Username string
+	Password string
+	Database string
 }
 
 // Server object holds the base configuration for the http server

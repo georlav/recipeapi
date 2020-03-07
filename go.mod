@@ -3,6 +3,7 @@ module github.com/georlav/recipeapi
 go 1.13
 
 require (
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/gorilla/mux v1.7.4
 	github.com/klauspost/compress v1.10.2 // indirect

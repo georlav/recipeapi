@@ -13,8 +13,8 @@ import (
 
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/handler"
-	"github.com/georlav/recipeapi/internal/mongoclient"
 	"github.com/georlav/recipeapi/internal/recipe"
+	"github.com/georlav/recipeapi/internal/recipe/mongodb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// Mongo client
-	client, err := mongoclient.NewClient(cfg.Mongo)
+	client, err := mongodb.New(cfg.Mongo)
 	if err != nil {
 		logger.Fatalf(`mongo client error, %s`, err)
 	}

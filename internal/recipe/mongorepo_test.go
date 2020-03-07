@@ -7,8 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/georlav/recipeapi/internal/recipe/mongodb"
+
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/mongoclient"
 	"github.com/georlav/recipeapi/internal/recipe"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -119,7 +120,7 @@ func recipeRepo() (*recipe.MongoRepo, *mongo.Collection, error) {
 	}
 
 	// Mongo client
-	client, err := mongoclient.NewClient(cfg)
+	client, err := mongodb.New(cfg)
 	if err != nil {
 		return nil, nil, fmt.Errorf(`mongo client error, %s`, err)
 	}

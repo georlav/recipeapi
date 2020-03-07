@@ -22,7 +22,7 @@ func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), 500)
 	}
 
-	resp := RecipeResponse{Title: "Recipe Puppy Clone", Version: 1, Href: "", Results: recipes}
+	resp := NewRecipesResponse("Recipe Puppy Clone", h.cfg.APP.Version, recipes)
 	if err := json.NewEncoder(w).Encode(&resp); err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), 500)
 	}

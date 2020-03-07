@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo/readpref"
-
-	"github.com/georlav/recipeapi/config"
-
+	"github.com/georlav/recipeapi/internal/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 // NewClient returns a new ready to use mongo client

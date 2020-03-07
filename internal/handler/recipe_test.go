@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/georlav/recipeapi/config"
-	"github.com/georlav/recipeapi/handler"
+	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/handler"
 )
 
 func TestHandler_Recipes(t *testing.T) {

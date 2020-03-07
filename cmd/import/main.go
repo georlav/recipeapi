@@ -8,11 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/georlav/recipeapi/config"
-
-	"github.com/georlav/recipeapi/mongoclient"
-
-	"github.com/georlav/recipeapi/recipe"
+	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/mongoclient"
+	"github.com/georlav/recipeapi/internal/recipe"
 )
 
 func main() {

@@ -4,7 +4,7 @@ services:
 
   mongo:
     image: mongo:3.6
-    container_name: recipesdb
+    container_name: mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: toor
@@ -14,6 +14,18 @@ services:
       - 27017:27017
     networks:
       - recipenetwork
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - 3306:3306
+      - 3316:3306
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: pass
 
 networks:
   recipenetwork:

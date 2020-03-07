@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/mongoclient"
 	"github.com/georlav/recipeapi/internal/recipe"
+	"github.com/georlav/recipeapi/internal/recipe/mongodb"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 	)
 
 	// Mongo client
-	client, err := mongoclient.NewClient(cfg.Mongo)
+	client, err := mongodb.New(cfg.Mongo)
 	if err != nil {
 		log.Fatalf(`mongo client error, %s`, err)
 	}

@@ -12,11 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/georlav/recipeapi/internal/mongoclient"
-	"github.com/georlav/recipeapi/internal/recipe"
-
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/handler"
+	"github.com/georlav/recipeapi/internal/recipe"
+	"github.com/georlav/recipeapi/internal/recipe/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -126,7 +125,7 @@ func recipeRepo() (*recipe.MongoRepo, *mongo.Collection, error) {
 	}
 
 	// Mongo client
-	client, err := mongoclient.NewClient(cfg)
+	client, err := mongodb.New(cfg)
 	if err != nil {
 		return nil, nil, fmt.Errorf(`mongo client error, %s`, err)
 	}

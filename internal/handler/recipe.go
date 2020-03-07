@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/georlav/recipeapi/recipe"
+	"github.com/georlav/recipeapi/internal/recipe"
 )
 
 func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {

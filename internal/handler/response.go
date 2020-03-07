@@ -1,6 +1,6 @@
 package handler
 
-import "github.com/georlav/recipeapi/recipe"
+import "github.com/georlav/recipeapi/internal/recipe"
 
 type RecipeResponse struct {
 	Title   string         `json:"title"`

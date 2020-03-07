@@ -11,16 +11,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/handler"
+	"github.com/georlav/recipeapi/internal/mongoclient"
+	"github.com/georlav/recipeapi/internal/recipe"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
-
-	"github.com/georlav/recipeapi/mongoclient"
-
-	"github.com/georlav/recipeapi/recipe"
-
-	"github.com/georlav/recipeapi/handler"
-
-	"github.com/georlav/recipeapi/config"
 )
 
 func main() {

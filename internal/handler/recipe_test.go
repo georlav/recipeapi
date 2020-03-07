@@ -1,15 +1,22 @@
-package recipe_test
+package handler_test
 
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/georlav/recipeapi/config"
-	"github.com/georlav/recipeapi/mongoclient"
-	"github.com/georlav/recipeapi/recipe"
+	"github.com/georlav/recipeapi/internal/mongoclient"
+	"github.com/georlav/recipeapi/internal/recipe"
+
+	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/handler"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -29,6 +36,8 @@ func TestMain(m *testing.M) {
 		ingredients := []string{"in1", "in2", "in3"}
 		if i%2 == 0 {
 			ingredients = append(ingredients, "in4")
+		} else {
+			ingredients = append(ingredients, "in5")
 		}
 
 		recipes = append(recipes, recipe.Recipe{
@@ -55,49 +64,47 @@ func TestMain(m *testing.M) {
 	os.Exit(ec)
 }
 
-func TestMongoDBRepo_GetMany(t *testing.T) {
-	testCases := []struct {
-		params  recipe.QueryParams
+func TestHandler_Recipes(t *testing.T) {
+	testData := []struct {
+		params  url.Values
 		results int
-		total   int64
 	}{
-		{recipe.QueryParams{}, 10, 15},
-		{recipe.QueryParams{Page: 1}, 10, 15},
-		{recipe.QueryParams{Page: 2}, 5, 15},
-		{recipe.QueryParams{Term: `"test recipe 2"`}, 1, 1},
-		{recipe.QueryParams{Term: "test recipe"}, 10, 15},
-		{recipe.QueryParams{Term: "recipe"}, 10, 15},
-		{recipe.QueryParams{Term: "recipe", Page: 2}, 5, 15},
-		{recipe.QueryParams{Term: "recipe", Page: 2, Ingredients: []string{"in1"}}, 5, 15},
-		{recipe.QueryParams{Term: "recipe", Page: 2, Ingredients: []string{"in1", "in2"}}, 5, 15},
-		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in5"}}, 0, 0},
-		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in1", "unknown"}}, 0, 0},
-		{recipe.QueryParams{Term: "recipe", Ingredients: []string{"in4"}}, 7, 7},
-		{recipe.QueryParams{Term: "Spaghetti code"}, 0, 0},
+		{url.Values{"p": []string{}}, 10},
+		{url.Values{"p": []string{"1"}}, 10},
+		{url.Values{"p": []string{"2"}}, 5},
+		{url.Values{"q": []string{`"test recipe 2"`}}, 1},
+		{url.Values{"q": []string{"test recipe"}}, 10},
+		{url.Values{"i": []string{"in1"}}, 10},
+		{url.Values{"i": []string{"in2"}, "p": []string{"2"}}, 5},
+		{url.Values{"i": []string{"in4"}}, 7},
+		{url.Values{"i": []string{"in5"}}, 8},
+		{url.Values{"i": []string{"in6"}}, 0},
+		{url.Values{"q": []string{"some term with no results"}, "i": []string{"in1"}}, 0},
 	}
 
-	rr, _, err := recipeRepo()
+	r, _, err := recipeRepo()
 	if err != nil {
 		t.Fatal(err)
 	}
+	h := handler.NewHandler(r, &config.Config{}, &log.Logger{})
 
-	for i := range testCases {
-		tc := testCases[i]
+	for i := range testData {
+		tc := testData[i]
 
-		t.Run(fmt.Sprintf("Quering with %+v", tc.params), func(t *testing.T) {
-			t.Parallel()
+		t.Run(fmt.Sprintf(`Test Case %+v`, tc.params), func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/recipes?"+tc.params.Encode(), nil)
 
-			s, c, err := rr.GetMany(tc.params)
-			if err != nil {
-				t.Fatal(err)
+			// init response recorder
+			rr := httptest.NewRecorder()
+			rh := http.HandlerFunc(h.Recipes)
+			rh.ServeHTTP(rr, req)
+
+			if http.StatusOK != rr.Code {
+				t.Fatalf("Wrong status code got %d expected %d", http.StatusOK, rr.Code)
 			}
 
-			if tc.results != len(s) {
-				t.Fatalf("Should have found %d results got %d", tc.results, len(s))
-			}
-
-			if tc.total != c {
-				t.Fatalf("Should have found %d total results got %d", tc.total, c)
+			if actualLen := strings.Count(rr.Body.String(), "id"); tc.results != actualLen {
+				t.Fatalf("Expected %d results got %d", tc.results, actualLen)
 			}
 		})
 	}
@@ -109,7 +116,7 @@ func recipeRepo() (*recipe.MongoRepo, *mongo.Collection, error) {
 		Port:                      27017,
 		Username:                  "root",
 		Password:                  "toor",
-		Database:                  "recipes",
+		Database:                  "recipes-testdb",
 		RecipeCollection:          "recipe",
 		PoolSize:                  100,
 		Timeout:                   15 * time.Second,

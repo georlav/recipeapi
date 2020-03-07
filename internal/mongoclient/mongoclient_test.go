@@ -4,9 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/georlav/recipeapi/mongoclient"
-
-	"github.com/georlav/recipeapi/config"
+	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/mongoclient"
 )
 
 func TestNewMongoClient(t *testing.T) {

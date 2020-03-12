@@ -24,7 +24,7 @@ services:
       MYSQL_PASSWORD: pass
       MYSQL_ROOT_PASSWORD: pass
     volumes:
-      - '/data/mysql:/var/lib/mysql'
+      - './data/mysql:/var/lib/mysql'
     ports:
       - 3306:3306
       - 3316:3306

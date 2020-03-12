@@ -48,14 +48,14 @@ func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// retrieve data from database
-	recipes, _, err := h.recipes.Paginate(rr.Page, &filters)
+	recipes, total, err := h.recipes.Paginate(rr.Page, &filters)
 	if err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
 		return
 	}
 
 	// Respond
-	resp := NewRecipesResponse("Recipe Puppy Clone", h.cfg.APP.Version, recipes)
+	resp := NewRecipesResponse("Recipe Puppy Clone", h.cfg.APP.Version, recipes, total)
 	if err := json.NewEncoder(w).Encode(&resp); err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
 	}

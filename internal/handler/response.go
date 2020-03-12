@@ -36,6 +36,18 @@ func NewRecipesResponse(title string, version int, r db.Recipes) RecipesResponse
 // RecipeResponseItem object to map recipe items
 type RecipeResponseItems []RecipeResponseItem
 
+// NewRecipesResponse
+func NewRecipeResponse(r *db.Recipe) RecipeResponseItem {
+	return RecipeResponseItem{
+		ID:          r.ID,
+		Title:       r.Title,
+		Ingredients: nil,
+		Thumbnail:   r.Thumbnail,
+		CreatedAt:   r.CreatedAt,
+		UpdatedAt:   r.UpdatedAt,
+	}
+}
+
 // RecipeResponseItem object to map a recipe item
 type RecipeResponseItem struct {
 	ID          string   `json:"id"`

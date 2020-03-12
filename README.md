@@ -78,13 +78,13 @@ make lint-insecure
 ### Usage example
 Following link should work when you reach 07-Handler-real-data branch or when on master
 ```
-http://127.0.0.1:8080/api/?i=onions&i=garlic&q=omelet&p=1
+http://127.0.0.1:8080/api/?ingredient=onions&ingredient=garlic&term=omelet&page=1
 ```
 
 Available Parameters explanation:
-- i : ingredients
-- q : text search query
-- p : page number
+- ingredient : list of ingredients
+- term : text search in titles
+- page : page number
 
 ## Authors
 * **George Lavdanis** - *Initial work* - [georlav](https://github.com/georlav)

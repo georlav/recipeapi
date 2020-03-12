@@ -38,7 +38,7 @@ jobs:
     - name: Test
       run: |
         cp config.json.dist config.json
-        mysql -h 127.0.0.1 -u root -ppass recipes_test < recipes-schema.sql
+        mysql -h 127.0.0.1 -P 3316 -u root -ppass recipes_test < recipes-schema.sql
         go test ./... -v -race -p=1 -coverprofile=coverage.txt -covermode=atomic
       
     - name: Upload Coverage

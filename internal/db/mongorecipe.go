@@ -1,11 +1,10 @@
-package mongodb
+package db
 
 import (
 	"context"
 	"fmt"
 	"time"
 
-	"github.com/georlav/recipeapi/internal/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,8 +17,8 @@ type RecipeCollection struct {
 	pageSize   uint64
 }
 
-// NewRecipe creates a recipe object
-func NewRecipe(recipe *mongo.Collection) *RecipeCollection {
+// RecipeCollection creates a recipe object
+func NewRecipeCollection(recipe *mongo.Collection) *RecipeCollection {
 	return &RecipeCollection{
 		collection: recipe,
 		pageSize:   10,
@@ -27,7 +26,7 @@ func NewRecipe(recipe *mongo.Collection) *RecipeCollection {
 }
 
 // Get a single recipe by id
-func (r *RecipeCollection) Get(id string) (*db.Recipe, error) {
+func (r *RecipeCollection) Get(id string) (*Recipe, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, fmt.Errorf("invalid signal id (%s), %w", id, err)
@@ -38,7 +37,7 @@ func (r *RecipeCollection) Get(id string) (*db.Recipe, error) {
 		bson.D{{Key: "_id", Value: oid}},
 	)
 
-	var rcp db.Recipe
+	var rcp Recipe
 	if err := result.Decode(&rcp); err != nil {
 		return nil, err
 	}
@@ -47,7 +46,7 @@ func (r *RecipeCollection) Get(id string) (*db.Recipe, error) {
 }
 
 // Paginate get paginated recipes
-func (r *RecipeCollection) Paginate(page uint64, flt *db.Filters) (db.Recipes, int64, error) {
+func (r *RecipeCollection) Paginate(page uint64, flt *Filters) (Recipes, int64, error) {
 	// find options
 	fOpts := options.Find()
 	fOpts.SetLimit(int64(r.pageSize))
@@ -75,9 +74,9 @@ func (r *RecipeCollection) Paginate(page uint64, flt *db.Filters) (db.Recipes, i
 	defer cursor.Close(context.TODO())
 
 	// Iterate results
-	var recipes db.Recipes
+	var recipes Recipes
 	for cursor.Next(context.TODO()) {
-		recipe := db.Recipe{}
+		recipe := Recipe{}
 		err = cursor.Decode(&recipe)
 		if err != nil {
 			return nil, 0, err
@@ -100,7 +99,7 @@ func (r *RecipeCollection) Paginate(page uint64, flt *db.Filters) (db.Recipes, i
 }
 
 // Insert updates or insert a new recipe
-func (r *RecipeCollection) Insert(recipe db.Recipe) error {
+func (r *RecipeCollection) Insert(recipe Recipe) error {
 	// Options to insert a record or update it if already exists
 	updateOpts := options.Update()
 	updateOpts.SetUpsert(true)
@@ -127,7 +126,7 @@ func (r *RecipeCollection) Insert(recipe db.Recipe) error {
 	return nil
 }
 
-func (r *RecipeCollection) paramsToFilters(flt db.Filters) bson.D {
+func (r *RecipeCollection) paramsToFilters(flt Filters) bson.D {
 	AndItems := bson.A{}
 
 	// Filter by term

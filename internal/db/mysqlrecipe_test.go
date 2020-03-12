@@ -1,67 +1,18 @@
-package mysql_test
+package db_test
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"os"
 	"reflect"
 	"testing"
 
-	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/db"
-	"github.com/georlav/recipeapi/internal/db/mysql"
+
+	"github.com/georlav/recipeapi/internal/config"
 )
 
-func TestMain(m *testing.M) {
-	file, err := ioutil.ReadFile("../testdata/recipes.json")
-	if err != nil {
-		log.Fatal("failed to load test data", err)
-	}
-
-	var data struct{ Recipes db.Recipes }
-	if err := json.Unmarshal(file, &data); err != nil {
-		log.Fatal("failed to marshal testdata", err)
-	}
-
-	tbl, sqlDB, err := recipeTbl()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Import data
-	for i := range data.Recipes {
-		if err := tbl.Insert(data.Recipes[i]); err != nil {
-			log.Fatalf("failed to insert test data %s", err)
-		}
-	}
-
-	status := m.Run()
-
-	// Clean up data
-	if _, err := sqlDB.Exec(`SET FOREIGN_KEY_CHECKS = 0`); err != nil {
-		log.Fatal(err)
-	}
-	if _, err := sqlDB.Exec(`TRUNCATE TABLE recipe`); err != nil {
-		log.Fatal(err)
-	}
-	if _, err := sqlDB.Exec(`TRUNCATE TABLE ingredient`); err != nil {
-		log.Fatal(err)
-	}
-	if _, err := sqlDB.Exec(`SET FOREIGN_KEY_CHECKS = 1`); err != nil {
-		log.Fatal(err)
-	}
-	if err := sqlDB.Close(); err != nil {
-		log.Fatal(err)
-	}
-
-	os.Exit(status)
-}
-
-func TestRecipe_Get(t *testing.T) {
+func TestNewRecipeTable_Get(t *testing.T) {
 	testCases := []struct {
 		desc   string
 		input  string
@@ -114,7 +65,7 @@ func TestRecipe_Get(t *testing.T) {
 	}
 }
 
-func TestRecipe_Insert(t *testing.T) {
+func TestNewRecipeTable_Insert(t *testing.T) {
 	testCases := []struct {
 		desc  string
 		input db.Recipe
@@ -163,7 +114,7 @@ func TestRecipe_Insert(t *testing.T) {
 	}
 }
 
-func TestMongoDBRepo_Paginate(t *testing.T) {
+func TestRecipeTable_Paginate(t *testing.T) {
 	testCases := []struct {
 		page             uint64
 		filters          *db.Filters
@@ -214,17 +165,16 @@ func TestMongoDBRepo_Paginate(t *testing.T) {
 	}
 }
 
-func recipeTbl() (*mysql.Recipe, *sql.DB, error) {
-	cfg, err := config.Load("../../../config.json")
+func recipeTbl() (*db.RecipeTable, *sql.DB, error) {
+	cfg, err := config.Load("testdata/config.json")
 	if err != nil {
 		return nil, nil, err
 	}
 
-	cfg.MySQL.Database += "_test"
-	sqlDB, err := mysql.New(cfg.MySQL)
+	sqlDB, err := db.NewMySQL(cfg.MySQL)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return mysql.NewRecipe(sqlDB), sqlDB, nil
+	return db.NewRecipeTable(sqlDB), sqlDB, nil
 }

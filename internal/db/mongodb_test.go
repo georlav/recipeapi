@@ -1,14 +1,14 @@
-package mongodb_test
+package db_test
 
 import (
 	"testing"
 	"time"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/db/mongodb"
+	"github.com/georlav/recipeapi/internal/db"
 )
 
-func TestNew(t *testing.T) {
+func TestNewMongoDB(t *testing.T) {
 	cfg := config.Mongo{
 		Host:                      "127.0.0.1",
 		Port:                      27017,
@@ -23,7 +23,7 @@ func TestNew(t *testing.T) {
 		SetRetryWrites:            false,
 	}
 
-	_, err := mongodb.New(cfg)
+	_, err := db.NewMongoDB(cfg)
 	if err != nil {
 		t.Fatalf("Mongo client failure, %s", err)
 	}

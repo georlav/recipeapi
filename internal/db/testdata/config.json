@@ -1,0 +1,37 @@
+{
+  "app": {
+    "Database": "MySQL",
+    "debug": true,
+    "version": 1
+  },
+  "server": {
+    "scheme": "http",
+    "host": "127.0.0.1",
+    "port": 8080,
+    "readTimeout": 30,
+    "writeTimeout": 30,
+    "idleTimeout": 30
+  },
+  "mongo": {
+    "host": "127.0.0.1",
+    "port": 27017,
+    "username": "root",
+    "password": "toor",
+    "database": "recipes_test",
+    "recipeCollection": "recipes",
+    "poolSize": 200,
+    "timeout": 15,
+    "setServerSelectionTimeout": 15,
+    "setConnectTimeout": 5,
+    "setSocketTimeout": 5,
+    "setMaxConnIdleTime": 15,
+    "setRetryWrites": false
+  },
+  "mysql": {
+    "Host": "127.0.0.1",
+    "Port": 3316,
+    "Username": "root",
+    "Password": "pass",
+    "Database": "recipes_test"
+  }
+}

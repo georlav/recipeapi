@@ -1,23 +1,22 @@
-package mysql
+package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/georlav/recipeapi/internal/db"
 )
 
 // Recipe object
-type Recipe struct {
+type RecipeTable struct {
 	pageSize    uint64
 	defaultCols []string
 	db          *sql.DB
 }
 
 // NewRecipe creates a recipe object
-func NewRecipe(sqlDB *sql.DB) *Recipe {
-	return &Recipe{
+func NewRecipeTable(sqlDB *sql.DB) *RecipeTable {
+	return &RecipeTable{
 		defaultCols: []string{"r.id", "r.title", "r.thumbnail", "r.url", "r.created_at", "r.updated_at"},
 		pageSize:    10,
 		db:          sqlDB,
@@ -25,14 +24,14 @@ func NewRecipe(sqlDB *sql.DB) *Recipe {
 }
 
 // Get a recipe by id
-func (r *Recipe) Get(id string) (*db.Recipe, error) {
+func (r *RecipeTable) Get(id string) (*Recipe, error) {
 	// nolint:gosec
 	query := fmt.Sprintf(
 		`SELECT %s FROM recipe r WHERE id = ?`,
 		strings.Join(r.defaultCols, ","),
 	)
 
-	var rcp db.Recipe
+	var rcp Recipe
 	if err := r.db.QueryRow(query, id).Scan(
 		&rcp.ID, &rcp.Title, &rcp.Thumbnail, &rcp.URL, &rcp.CreatedAt, &rcp.UpdatedAt,
 	); err != nil {
@@ -48,7 +47,7 @@ func (r *Recipe) Get(id string) (*db.Recipe, error) {
 }
 
 // Paginate get paginated recipes
-func (r *Recipe) Paginate(page uint64, flt *db.Filters) (db.Recipes, int64, error) {
+func (r *RecipeTable) Paginate(page uint64, flt *Filters) (Recipes, int64, error) {
 	var args []interface{}
 	query := `SELECT DISTINCT r.id, r.title, r.thumbnail, r.url, r.created_at, r.updated_at 
 FROM recipe r 
@@ -71,7 +70,7 @@ WHERE 1=1`
 	query += " GROUP BY r.id"
 
 	// count all results before applying limits
-	total, err := countGroup(r.db, query, args)
+	total, err := r.countGroup(query, args)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -87,9 +86,9 @@ WHERE 1=1`
 		return nil, 0, err
 	}
 
-	var recipes db.Recipes
+	var recipes Recipes
 	for rows.Next() {
-		r := db.Recipe{}
+		r := Recipe{}
 		if err := rows.Scan(
 			&r.ID, &r.Title, &r.Thumbnail, &r.URL, &r.CreatedAt, &r.UpdatedAt,
 		); err != nil {
@@ -111,7 +110,7 @@ WHERE 1=1`
 }
 
 // Insert updates or insert a new recipe
-func (r *Recipe) Insert(recipe db.Recipe) error {
+func (r *RecipeTable) Insert(recipe Recipe) error {
 	rq := `INSERT INTO recipe (title, thumbnail, url) VALUES (?, ?, ?)`
 	// nolint:gosec
 	iq := fmt.Sprintf(`INSERT INTO ingredient (recipe_id, name) VALUES %s ON DUPLICATE KEY UPDATE name = name`,
@@ -167,7 +166,7 @@ func (r *Recipe) Insert(recipe db.Recipe) error {
 }
 
 // Get recipe ingredients
-func (r *Recipe) withIngredients(recipes ...db.Recipe) (db.Recipes, error) {
+func (r *RecipeTable) withIngredients(recipes ...Recipe) (Recipes, error) {
 	if len(recipes) == 0 {
 		return recipes, nil
 	}
@@ -208,4 +207,22 @@ func (r *Recipe) withIngredients(recipes ...db.Recipe) (db.Recipes, error) {
 	}
 
 	return recipes, nil
+}
+
+func (r *RecipeTable) countGroup(q string, qArgs []interface{}) (int64, error) {
+	q = strings.ReplaceAll(q, "\n", " ")
+	q = strings.ReplaceAll(q, "\t", " ")
+	neqQ := strings.SplitAfter(strings.ToLower(q), " from ")
+	if len(neqQ) <= 1 {
+		return 0, fmt.Errorf("unable to count, query should have a from statement, %+v", neqQ)
+	}
+	// nolint:gosec
+	cntQ := fmt.Sprintf("SELECT count(*) as count FROM (%s) as countable", q)
+
+	var total int64
+	if err := r.db.QueryRow(cntQ, qArgs...).Scan(&total); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return 0, fmt.Errorf("unable to count, %w", err)
+	}
+
+	return total, nil
 }

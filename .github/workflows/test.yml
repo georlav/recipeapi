@@ -37,7 +37,7 @@ jobs:
 
     - name: Test
       run: |
-        mysql -h mysql -P 3316 -uroot -ppass recipes_test < recipes-schema.sql
+        mysql -h 127.0.0.1 -P 3316 -uroot -ppass recipes_test < recipes-schema.sql
         cp config.json.dist config.json
         go test ./... -v -race -p=1 -mod=vendor -coverprofile=coverage.txt -covermode=atomic
       

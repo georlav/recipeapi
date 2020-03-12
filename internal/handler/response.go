@@ -1,8 +1,6 @@
 package handler
 
-import (
-	"github.com/georlav/recipeapi/internal/recipe"
-)
+import "github.com/georlav/recipeapi/internal/db"
 
 // RecipeResponse recipe response object
 type RecipesResponse struct {
@@ -13,7 +11,7 @@ type RecipesResponse struct {
 }
 
 // NewRecipesResponse
-func NewRecipesResponse(title string, version int, r recipe.Recipes) RecipesResponse {
+func NewRecipesResponse(title string, version int, r db.Recipes) RecipesResponse {
 	rr := RecipesResponse{
 		Title:   title,
 		Version: version,
@@ -37,6 +35,18 @@ func NewRecipesResponse(title string, version int, r recipe.Recipes) RecipesResp
 
 // RecipeResponseItem object to map recipe items
 type RecipeResponseItems []RecipeResponseItem
+
+// NewRecipesResponse
+func NewRecipeResponse(r *db.Recipe) RecipeResponseItem {
+	return RecipeResponseItem{
+		ID:          r.ID,
+		Title:       r.Title,
+		Ingredients: nil,
+		Thumbnail:   r.Thumbnail,
+		CreatedAt:   r.CreatedAt,
+		UpdatedAt:   r.UpdatedAt,
+	}
+}
 
 // RecipeResponseItem object to map a recipe item
 type RecipeResponseItem struct {

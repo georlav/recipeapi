@@ -17,21 +17,21 @@
     "port": 27017,
     "username": "root",
     "password": "toor",
-    "database": "recipes",
-    "recipeCollection": "recipe",
+    "database": "recipes_test",
+    "recipeCollection": "recipes",
     "poolSize": 200,
     "timeout": 15,
     "setServerSelectionTimeout": 15,
-    "setConnectTimeout": 15,
-    "setSocketTimeout": 15,
+    "setConnectTimeout": 5,
+    "setSocketTimeout": 5,
     "setMaxConnIdleTime": 15,
     "setRetryWrites": false
   },
-    "mysql": {
-      "Host": "127.0.0.1",
-      "Port": 3316,
-      "Username": "root",
-      "Password": "pass",
-      "Database": "recipes"
-    }
+  "mysql": {
+    "Host": "127.0.0.1",
+    "Port": 3316,
+    "Username": "root",
+    "Password": "pass",
+    "Database": "recipes_test"
+  }
 }

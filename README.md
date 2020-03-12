@@ -18,7 +18,7 @@ retrieved from there.
  * 03-Logging
  * 04-Handlers
  * 05-Routes
- * 06-Repository
+ * 06-Database
  * 07-Handler-real-data
  * 08-Middleware
  * 09-CI
@@ -28,14 +28,19 @@ There are no notes/comments for each branch. All the above branches have been me
 ### Prerequisites
  * Go
  * Docker
- * MongoDB 3.6
 
-API uses mongoDB as its main database, a docker compose file is provided for faster setup. You can start a container of
-mongo using the following command  
+API can work both with mysql or mongodb, a docker compose file is provided for faster setup. To easily start and 
+initialize databases run
+```bash
+make db
+```
+
+Starts database containers and imports all required dumps to mysql main and test db. You only need to run this command
+when working with fresh containers, use docker compose to control your containers after the initial setup.
 ```bash
 docker-compose up -d
 ```
-
+   
 ### Importing data
 When on master branch or after reaching 07-Handler-real-data branch you can import data by running the following command
 ```bash
@@ -43,7 +48,7 @@ make import
 ``` 
 
 ### Configuration
-Most of the project values can be configured by editing config.json. File is located at the project root folder
+Most of the project values can be configured by editing config.json. File located at the project root folder.
 
 ### Running the tests
 ```bash
@@ -58,7 +63,17 @@ make run
 ### Building the project
 ```bash
 make build
-``` 
+```
+
+### Running the linter
+```bash
+make lint
+```
+
+if you are behind a corporate firewall using a custom certificate use
+```bash
+make lint-insecure
+```
 
 ### Usage example
 Following link should work when you reach 07-Handler-real-data branch or when on master

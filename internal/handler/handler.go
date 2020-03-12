@@ -3,10 +3,9 @@ package handler
 import (
 	"log"
 
-	"github.com/gorilla/schema"
-
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/db"
+	"github.com/gorilla/schema"
 )
 
 type Handler struct {

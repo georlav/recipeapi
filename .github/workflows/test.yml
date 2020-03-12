@@ -39,8 +39,9 @@ jobs:
 
     - name: Test
       run: |
+        sudo apt-get install -y mysql-client
+        mysql -h 127.0.0.1 -P 6458 -uroot -ppass recipes_test
         cp config.json.dist config.json
-        mysql -h 127.0.0.1 -P 6458 -u root -ppass recipes_test
         go test ./... -v -race -p=1 -mod=vendor -coverprofile=coverage.txt -covermode=atomic
       
     - name: Upload Coverage

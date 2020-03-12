@@ -55,13 +55,13 @@ linters:
     - deadcode
     - depguard
     - dogsled
-    - dupl
+#    - dupl
     - errcheck
     - funlen
 #    - gochecknoglobals
 #    - gochecknoinits
     - gocognit
-    - goconst
+#    - goconst
     - gocritic
     - gocyclo
     - godox

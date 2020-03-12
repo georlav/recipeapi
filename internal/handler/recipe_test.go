@@ -1,8 +1,9 @@
 package handler_test
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -10,56 +11,68 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/db/mongodb"
+	"github.com/georlav/recipeapi/internal/db"
 	"github.com/georlav/recipeapi/internal/handler"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
-// Setup data for mongo related tests
 func TestMain(m *testing.M) {
-	mc, col, err := recipeRepo()
+	// load config
+	cfg, err := config.Load("testdata/config.json")
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
-	// Import 15 recipes
-	recipes := recipe.Recipes{}
-	for i := 1; i <= 15; i++ {
-		ingredients := []string{"in1", "in2", "in3"}
-		if i%2 == 0 {
-			ingredients = append(ingredients, "in4")
-		} else {
-			ingredients = append(ingredients, "in5")
+	// load data to import
+	jd, err := ioutil.ReadFile("testdata/recipes.json")
+	if err != nil {
+		log.Fatalf("failed to load test data, %s", err)
+	}
+
+	// Create recipes from data
+	var data struct{ Recipes db.Recipes }
+	if err := json.Unmarshal(jd, &data); err != nil {
+		log.Fatalf("failed to marshal testdata, %s", err)
+	}
+
+	// Get a recipe handle
+	recipeTbl, err := db.New(*cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Import data
+	for i := range data.Recipes {
+		if err := recipeTbl.Insert(data.Recipes[i]); err != nil {
+			log.Fatalf("failed to insert test data, %s", err)
 		}
-
-		recipes = append(recipes, recipe.Recipe{
-			Title:       fmt.Sprintf("test recipe %d", i),
-			URL:         fmt.Sprintf("http://test%d.dev", i),
-			Ingredients: ingredients,
-			Thumbnail:   "http://img.recipepuppy.com/1.jpg",
-		})
 	}
 
-	if err = mc.Insert(recipes...); err != nil {
-		fmt.Printf(`Mongo Import error, %s`, err)
-		os.Exit(1)
+	code := m.Run()
+
+	sqlDB, err := db.NewMySQL(cfg.MySQL)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	ec := m.Run()
-
-	// remove imported data
-	if _, err = col.DeleteMany(context.Background(), bson.D{}); err != nil {
-		fmt.Printf(`Mongo mass delete error, %s`, err)
-		os.Exit(1)
+	if _, err := sqlDB.Exec(`SET FOREIGN_KEY_CHECKS = 0`); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := sqlDB.Exec(`TRUNCATE TABLE recipe`); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := sqlDB.Exec(`TRUNCATE TABLE ingredient`); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := sqlDB.Exec(`SET FOREIGN_KEY_CHECKS = 1`); err != nil {
+		log.Fatal(err)
+	}
+	if err := sqlDB.Close(); err != nil {
+		log.Fatal(err)
 	}
 
-	os.Exit(ec)
+	os.Exit(code)
 }
 
 func TestHandler_Recipes(t *testing.T) {
@@ -67,32 +80,46 @@ func TestHandler_Recipes(t *testing.T) {
 		params  url.Values
 		results int
 	}{
-		{url.Values{"p": []string{}}, 10},
+		{url.Values{"p": []string{"0"}}, 10},
 		{url.Values{"p": []string{"1"}}, 10},
-		{url.Values{"p": []string{"2"}}, 5},
-		{url.Values{"q": []string{`"test recipe 2"`}}, 1},
-		{url.Values{"q": []string{"test recipe"}}, 10},
-		{url.Values{"i": []string{"in1"}}, 10},
-		{url.Values{"i": []string{"in2"}, "p": []string{"2"}}, 5},
-		{url.Values{"i": []string{"in4"}}, 7},
-		{url.Values{"i": []string{"in5"}}, 8},
-		{url.Values{"i": []string{"in6"}}, 0},
-		{url.Values{"q": []string{"some term with no results"}, "i": []string{"in1"}}, 0},
+		{url.Values{"p": []string{"2"}}, 10},
+		{url.Values{"p": []string{"3"}}, 2},
+		{url.Values{"p": []string{"1"}, "q": []string{"Ginger Champagne"}}, 1},
+		{url.Values{"p": []string{"1"}, "q": []string{"potato"}}, 4},
+		{url.Values{"p": []string{"1"}, "q": []string{"onion"}}, 1},
+		{url.Values{"p": []string{"1"}, "q": []string{"onion"}, "i": []string{"onions"}}, 1},
+		{url.Values{"p": []string{"1"}, "i": []string{"onions"}}, 8},
+		{url.Values{"p": []string{"1"}, "i": []string{"eggs"}}, 5},
+		{url.Values{"p": []string{"1"}, "i": []string{"onions", "eggs"}}, 10},
+		{url.Values{"p": []string{"2"}, "i": []string{"onions", "eggs"}}, 2},
+		{url.Values{"p": []string{"1"}, "q": []string{"pork"}}, 3},
+		{url.Values{"p": []string{"1"}, "q": []string{"pork"}, "i": []string{"garlic"}}, 2},
+		{url.Values{"p": []string{"1"}, "q": []string{"pork"}, "i": []string{"garlic", "brown sugar"}}, 2},
+		{url.Values{"p": []string{"1"}, "q": []string{"park"}, "i": []string{"garlic", "brown sugar"}}, 0},
+		{url.Values{"p": []string{"1"}, "q": []string{"potato"}, "i": []string{"eggs"}}, 1},
+		{url.Values{"p": []string{"1"}, "i": []string{"Spaghetti code"}}, 0},
 	}
 
-	r, _, err := recipeRepo()
+	cfg, err := config.Load("testdata/config.json")
 	if err != nil {
-		t.Fatal(err)
+		log.Fatal(err)
 	}
-	h := handler.NewHandler(r, &config.Config{}, &log.Logger{})
+
+	recipeTbl, err := db.New(*cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	h := handler.NewHandler(recipeTbl, &config.Config{}, &log.Logger{})
 
 	for i := range testData {
 		tc := testData[i]
 
 		t.Run(fmt.Sprintf(`Test Case %+v`, tc.params), func(t *testing.T) {
+			t.Parallel()
 			req := httptest.NewRequest("GET", "/recipes?"+tc.params.Encode(), nil)
 
-			// init response recorder
+			// initialize response recorder to monitor handler response data
 			rr := httptest.NewRecorder()
 			rh := http.HandlerFunc(h.Recipes)
 			rh.ServeHTTP(rr, req)
@@ -100,49 +127,9 @@ func TestHandler_Recipes(t *testing.T) {
 			if http.StatusOK != rr.Code {
 				t.Fatalf("Wrong status code got %d expected %d", http.StatusOK, rr.Code)
 			}
-
-			if actualLen := strings.Count(rr.Body.String(), "id"); tc.results != actualLen {
+			if actualLen := strings.Count(rr.Body.String(), "createdAt"); tc.results != actualLen {
 				t.Fatalf("Expected %d results got %d", tc.results, actualLen)
 			}
 		})
 	}
-}
-
-func recipeRepo() (*recipe.MongoRepo, *mongo.Collection, error) {
-	cfg := config.Mongo{
-		Host:                      "127.0.0.1",
-		Port:                      27017,
-		Username:                  "root",
-		Password:                  "toor",
-		Database:                  "recipes-testdb",
-		RecipeCollection:          "recipe",
-		PoolSize:                  100,
-		Timeout:                   15 * time.Second,
-		SetServerSelectionTimeout: 15 * time.Second,
-		SetMaxConnIdleTime:        15 * time.Second,
-		SetRetryWrites:            false,
-	}
-
-	// Mongo client
-	client, err := mongodb.New(cfg)
-	if err != nil {
-		return nil, nil, fmt.Errorf(`mongo client error, %s`, err)
-	}
-
-	// Select a database collection and inject it to repo
-	db := client.Database(cfg.Database + "-testdb")
-	rCollection := db.Collection(cfg.RecipeCollection)
-
-	// Create searchable index
-	iv := rCollection.Indexes()
-	_, err = iv.CreateOne(context.Background(), mongo.IndexModel{
-		Keys: bsonx.Doc{
-			{Key: "title", Value: bsonx.String("text")},
-		},
-	})
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return recipe.NewMongoRepo(rCollection, cfg), rCollection, nil
 }

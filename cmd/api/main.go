@@ -11,12 +11,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/georlav/recipeapi/internal/db"
+
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/handler"
-	"github.com/georlav/recipeapi/internal/recipe"
-	"github.com/georlav/recipeapi/internal/recipe/mongodb"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 func main() {
@@ -36,29 +34,14 @@ func main() {
 		logger.SetOutput(ioutil.Discard)
 	}
 
-	// Mongo client
-	client, err := mongodb.New(cfg.Mongo)
+	// Get database service
+	dbs, err := db.New(*cfg)
 	if err != nil {
-		logger.Fatalf(`mongo client error, %s`, err)
-	}
-
-	// Initialize mongo
-	db := client.Database(cfg.Mongo.Database)
-	rCollection := db.Collection(cfg.Mongo.RecipeCollection)
-
-	// Create searchable index
-	iv := rCollection.Indexes()
-	if _, err := iv.CreateOne(context.Background(), mongo.IndexModel{
-		Keys: bsonx.Doc{{Key: "title", Value: bsonx.String("text")}},
-	}); err != nil {
 		logger.Fatal(err)
 	}
 
-	// initialize repository
-	rr := recipe.NewMongoRepo(rCollection, cfg.Mongo)
-
 	// Initialize handlers
-	h := handler.NewHandler(rr, cfg, logger)
+	h := handler.NewHandler(dbs, cfg, logger)
 
 	// Initialize API routes
 	r := handler.Routes(h)

@@ -18,14 +18,18 @@ services:
   mysql:
     image: mysql:5.7
     container_name: mysql
-    ports:
-      - 3306:3306
-      - 3316:3306
     environment:
-      MYSQL_DATABASE: test
+      MYSQL_DATABASE: recipes
       MYSQL_USER: user
       MYSQL_PASSWORD: pass
       MYSQL_ROOT_PASSWORD: pass
+    volumes:
+      - '/data/mysql:/var/lib/mysql'
+    ports:
+      - 3306:3306
+      - 3316:3306
+    networks:
+      - recipenetwork
 
 networks:
   recipenetwork:

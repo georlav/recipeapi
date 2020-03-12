@@ -17,8 +17,9 @@ type Config struct {
 
 // APP holds general app configuration values
 type APP struct {
-	Version int  `json:"version"`
-	Debug   bool `json:"debug"`
+	Database string `json:"database"`
+	Version  int    `json:"version"`
+	Debug    bool   `json:"debug"`
 }
 
 // Mongo holds the configuration for mongo database

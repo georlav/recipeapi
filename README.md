@@ -42,9 +42,18 @@ docker-compose up -d
 ```
    
 ### Importing data
-When on master branch or after reaching 07-Handler-real-data branch you can import data by running the following command
+When on master branch or after reaching 07-Handler-real-data branch you can import data by running the following 
+commands. 
+
+Start the api.
 ```bash
-make import
+go run cmd/api/main.go
+``` 
+
+Then run the import cmd to start posting data to the api, this will read the recipes.json on the root folder and will
+start posting data to the api
+```bash
+go run cmd/import/main.go
 ``` 
 
 ### Configuration

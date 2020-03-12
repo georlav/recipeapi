@@ -12,9 +12,8 @@ import (
 	"time"
 
 	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/db/mongodb"
 	"github.com/georlav/recipeapi/internal/handler"
-	"github.com/georlav/recipeapi/internal/recipe"
-	"github.com/georlav/recipeapi/internal/recipe/mongodb"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
@@ -54,7 +53,7 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	// initialize repository
+	// initialize database
 	rr := recipe.NewMongoRepo(rCollection, cfg.Mongo)
 
 	// Initialize handlers

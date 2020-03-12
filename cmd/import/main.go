@@ -9,8 +9,7 @@ import (
 	"strings"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/recipe"
-	"github.com/georlav/recipeapi/internal/recipe/mongodb"
+	"github.com/georlav/recipeapi/internal/db/mongodb"
 )
 
 func main() {
@@ -30,7 +29,7 @@ func main() {
 		log.Fatalf(`mongo client error, %s`, err)
 	}
 
-	// Initialize mongo
+	// Initialize db
 	db := client.Database(cfg.Mongo.Database)
 	rCollection := db.Collection(cfg.Mongo.RecipeCollection)
 	rr := recipe.NewMongoRepo(rCollection, cfg.Mongo)
@@ -53,7 +52,7 @@ func main() {
 			logger.Fatal(err)
 		}
 
-		recipes := recipe.Recipes{}
+		recipes := db.Recipes{}
 		for i := range r {
 			ing := strings.Split(r[i].Ingredients, ",")
 			for i := range ing {

@@ -1,8 +1,6 @@
 package handler
 
-import (
-	"github.com/georlav/recipeapi/internal/recipe"
-)
+import "github.com/georlav/recipeapi/internal/db"
 
 // RecipeResponse recipe response object
 type RecipesResponse struct {
@@ -13,7 +11,7 @@ type RecipesResponse struct {
 }
 
 // NewRecipesResponse
-func NewRecipesResponse(title string, version int, r recipe.Recipes) RecipesResponse {
+func NewRecipesResponse(title string, version int, r db.Recipes) RecipesResponse {
 	rr := RecipesResponse{
 		Title:   title,
 		Version: version,

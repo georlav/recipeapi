@@ -38,7 +38,7 @@ jobs:
     - name: Test
       run: |
         cp config.json.dist config.json
-        go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic
+        go test ./... -v -race -p=1 -coverprofile=coverage.txt -covermode=atomic
       
     - name: Upload Coverage
       uses: codecov/codecov-action@v1

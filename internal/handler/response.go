@@ -30,7 +30,7 @@ func NewRecipesResponse(title string, version int, r db.Recipes, total int64) Re
 		items = append(items, RecipeResponseItem{
 			ID:          r[i].ID,
 			Title:       r[i].Title,
-			Ingredients: nil,
+			Ingredients: r[i].Ingredients,
 			Thumbnail:   r[i].Thumbnail,
 			CreatedAt:   r[i].CreatedAt,
 			UpdatedAt:   r[i].UpdatedAt,

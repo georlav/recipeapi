@@ -24,5 +24,12 @@
     "setSocketTimeout": 15,
     "setMaxConnIdleTime": 15,
     "setRetryWrites": false
-  }
+  },
+    "mysql": {
+      "Host": "127.0.0.1",
+      "Port": 3316,
+      "Username": "root",
+      "Password": "pass",
+      "Database": "recipes"
+    }
 }

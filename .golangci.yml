@@ -58,8 +58,8 @@ linters:
     - dupl
     - errcheck
     - funlen
-    #    - gochecknoglobals
-    #    - gochecknoinits
+#    - gochecknoglobals
+#    - gochecknoinits
     - gocognit
     - goconst
     - gocritic
@@ -68,7 +68,7 @@ linters:
     - gofmt
     - goimports
     - golint
-    #    - gomnd
+#    - gomnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -76,17 +76,17 @@ linters:
     - ineffassign
     - interfacer
     - lll
-    #    - maligned
+#    - maligned
     - misspell
     - nakedret
-    - prealloc
+#    - prealloc
     - rowserrcheck
     - scopelint
     - staticcheck
     - structcheck
     - stylecheck
     - unconvert
-    #    - unparam
+#    - unparam
     - unused
     - varcheck
     - whitespace

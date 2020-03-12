@@ -4,8 +4,7 @@ import (
 	"testing"
 
 	"github.com/georlav/recipeapi/internal/config"
-
-	"github.com/georlav/recipeapi/internal/recipe/mysql"
+	"github.com/georlav/recipeapi/internal/db/mysql"
 )
 
 func TestNew(t *testing.T) {
@@ -14,7 +13,7 @@ func TestNew(t *testing.T) {
 		Port:     3316,
 		Username: "user",
 		Password: "pass",
-		Database: "test",
+		Database: "recipes",
 	}
 
 	db, err := mysql.New(c)

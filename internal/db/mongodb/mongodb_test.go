@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/recipe/mongodb"
+	"github.com/georlav/recipeapi/internal/db/mongodb"
 )
 
 func TestNew(t *testing.T) {

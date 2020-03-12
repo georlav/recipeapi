@@ -1,4 +1,4 @@
-package mysql
+package db
 
 import (
 	"database/sql"
@@ -9,7 +9,7 @@ import (
 )
 
 // New returns a new db handle
-func New(c config.MySQL) (*sql.DB, error) {
+func NewMySQL(c config.MySQL) (*sql.DB, error) {
 	dsn, err := mysql.ParseDSN(
 		fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", c.Username, c.Password, c.Host, c.Port, c.Database),
 	)

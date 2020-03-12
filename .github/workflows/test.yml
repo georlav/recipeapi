@@ -39,7 +39,7 @@ jobs:
       run: |
         cp config.json.dist config.json
         mysql -h 127.0.0.1 -P 3316 -u root -ppass recipes_test < recipes-schema.sql
-        go test ./... -v -race -p=1 -coverprofile=coverage.txt -covermode=atomic
+        go test ./... -v -race -p=1 -mod=vendor -coverprofile=coverage.txt -covermode=atomic
       
     - name: Upload Coverage
       uses: codecov/codecov-action@v1

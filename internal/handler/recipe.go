@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"gopkg.in/go-playground/validator.v9"
-
 	"github.com/georlav/recipeapi/internal/db"
 	"github.com/gorilla/mux"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 func (h Handler) Recipe(w http.ResponseWriter, r *http.Request) {

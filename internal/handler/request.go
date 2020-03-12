@@ -11,6 +11,6 @@ type RecipesRequest struct {
 type RecipeCreateRequest struct {
 	Title       string   `validate:"required,min=2" schema:"title"`
 	URL         string   `validate:"required,min=10" schema:"url"`
-	Thumbnail   string   `validate:"required,min=10" schema:"thumbnail"`
-	Ingredients []string `validate:"required,max=10,min=1" schema:"ingredients"`
+	Thumbnail   string   `schema:"thumbnail"`
+	Ingredients []string `validate:"required,max=30,min=1" schema:"ingredients"`
 }

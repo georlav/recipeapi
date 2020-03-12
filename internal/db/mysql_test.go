@@ -1,6 +1,7 @@
 package db_test
 
 import (
+	"log"
 	"testing"
 
 	"github.com/georlav/recipeapi/internal/config"
@@ -8,15 +9,12 @@ import (
 )
 
 func TestNewMySQL(t *testing.T) {
-	c := config.MySQL{
-		Host:     "127.0.0.1",
-		Port:     3316,
-		Username: "user",
-		Password: "pass",
-		Database: "recipes",
+	cfg, err := config.Load("testdata/config.json")
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	mdb, err := db.NewMySQL(c)
+	mdb, err := db.NewMySQL(cfg.MySQL)
 	if err != nil {
 		t.Fatal(err)
 	}

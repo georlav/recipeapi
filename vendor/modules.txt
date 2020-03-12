@@ -1,3 +1,8 @@
+# github.com/go-playground/locales v0.13.0
+github.com/go-playground/locales
+github.com/go-playground/locales/currency
+# github.com/go-playground/universal-translator v0.17.0
+github.com/go-playground/universal-translator
 # github.com/go-sql-driver/mysql v1.5.0
 github.com/go-sql-driver/mysql
 # github.com/go-stack/stack v1.8.0
@@ -6,12 +11,16 @@ github.com/go-stack/stack
 github.com/golang/snappy
 # github.com/gorilla/mux v1.7.4
 github.com/gorilla/mux
+# github.com/gorilla/schema v1.1.0
+github.com/gorilla/schema
 # github.com/klauspost/compress v1.10.2
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/huff0
 github.com/klauspost/compress/snappy
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
+# github.com/leodido/go-urn v1.2.0
+github.com/leodido/go-urn
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
 # github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c
@@ -57,3 +66,5 @@ golang.org/x/sync/semaphore
 # golang.org/x/text v0.3.2
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
+# gopkg.in/go-playground/validator.v9 v9.31.0
+gopkg.in/go-playground/validator.v9

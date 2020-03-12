@@ -20,6 +20,7 @@ jobs:
         image: mysql:5.7
         ports:
           - 3316:3306
+          - 9999:3306
         env:
           MYSQL_HOST: localhost
           MYSQL_DATABASE: recipes_test
@@ -39,7 +40,7 @@ jobs:
     - name: Test
       run: |
         cp config.json.dist config.json
-        mysql -h localhost -P 3316 -u root -ppass recipes_test
+        mysql -h localhost -P 9999 -u root -ppass recipes_test
         go test ./... -v -race -p=1 -mod=vendor -coverprofile=coverage.txt -covermode=atomic
       
     - name: Upload Coverage

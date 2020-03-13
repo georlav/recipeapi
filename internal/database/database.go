@@ -4,12 +4,18 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/georlav/recipeapi/internal/config"
 	"github.com/go-sql-driver/mysql"
+
+	"github.com/georlav/recipeapi/internal/config"
 )
 
-// New returns a new db handle
-func NewClient(c config.MySQL) (*sql.DB, error) {
+type Database struct {
+	Handle     *sql.DB
+	Recipe     *RecipeTable
+	Ingredient *IngredientTable
+}
+
+func New(c config.MySQL) (*Database, error) {
 	dsn, err := mysql.ParseDSN(
 		fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", c.Username, c.Password, c.Host, c.Port, c.Database),
 	)
@@ -29,5 +35,9 @@ func NewClient(c config.MySQL) (*sql.DB, error) {
 		return nil, fmt.Errorf("ping error, %w", err)
 	}
 
-	return db, nil
+	return &Database{
+		Handle:     db,
+		Recipe:     NewRecipeTable(db),
+		Ingredient: NewIngredientTable(db),
+	}, nil
 }

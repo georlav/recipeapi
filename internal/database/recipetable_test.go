@@ -44,7 +44,7 @@ func TestNewRecipeTable_Get(t *testing.T) {
 		},
 	}
 
-	rt, _, err := recipeTable()
+	db, err := db()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +53,7 @@ func TestNewRecipeTable_Get(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.desc, func(t *testing.T) {
-			recipe, err := rt.Get(tc.input)
+			recipe, err := db.Recipe.Get(tc.input)
 			if err != nil && !errors.Is(err, tc.error) {
 				t.Fatal(err)
 			}
@@ -106,12 +106,12 @@ func TestNewRecipeTable_Insert(t *testing.T) {
 		},
 	}
 
-	table, mdb, err := recipeTable()
+	db, err := db()
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
-		if _, err := mdb.Exec("delete from recipe where id = 23"); err != nil {
+		if _, err := db.Handle.Exec("delete from recipe where id = 23"); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -120,7 +120,7 @@ func TestNewRecipeTable_Insert(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.desc, func(t *testing.T) {
-			id, err := table.Insert(tc.input)
+			id, err := db.Recipe.Insert(tc.input)
 			if err != nil && err.Error() != tc.error.Error() {
 				t.Fatal(err)
 			}
@@ -157,7 +157,7 @@ func TestRecipeTable_Paginate(t *testing.T) {
 		{1, &database.RecipeFilters{Term: "Spaghetti code"}, 0, 0},
 	}
 
-	rc, _, err := recipeTable()
+	db, err := db()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -168,7 +168,7 @@ func TestRecipeTable_Paginate(t *testing.T) {
 		t.Run(fmt.Sprintf("Request page %d with filters %+v", tc.page, tc.filters), func(t *testing.T) {
 			t.Parallel()
 
-			recipes, total, err := rc.Paginate(tc.page, tc.filters)
+			recipes, total, err := db.Recipe.Paginate(tc.page, tc.filters)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -182,16 +182,16 @@ func TestRecipeTable_Paginate(t *testing.T) {
 	}
 }
 
-func recipeTable() (*database.RecipeTable, *sql.DB, error) {
+func db() (*database.Database, error) {
 	cfg, err := config.Load("testdata/config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db, err := database.NewClient(cfg.MySQL)
+	db, err := database.New(cfg.MySQL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return database.NewRecipeTable(db), db, err
+	return db, err
 }

@@ -27,8 +27,8 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to load test data, %s", err)
 	}
 
-	db, error := database.New(cfg.MySQL)
-	if error != nil {
+	db, err := database.New(cfg.MySQL)
+	if err != nil {
 		log.Fatal(err)
 	}
 

@@ -1,22 +1,23 @@
 package handler
 
-import "github.com/georlav/recipeapi/internal/db"
+import "github.com/georlav/recipeapi/internal/database"
 
 // RecipeResponse recipe response object
 type RecipesResponse struct {
 	Title    string               `json:"title"`
 	Version  int                  `json:"version"`
 	Href     string               `json:"href"`
-	Data     *RecipeResponseItems `json:"results"`
+	Data     *RecipeResponseItems `json:"data"`
 	Metadata Metadata             `json:"metadata"`
 }
 
+// Metadata
 type Metadata struct {
 	Total int64
 }
 
 // NewRecipesResponse
-func NewRecipesResponse(title string, version int, r db.Recipes, total int64) RecipesResponse {
+func NewRecipesResponse(title string, version int, r database.Recipes, total int64) RecipesResponse {
 	rr := RecipesResponse{
 		Title:   title,
 		Version: version,
@@ -27,14 +28,20 @@ func NewRecipesResponse(title string, version int, r db.Recipes, total int64) Re
 
 	var items RecipeResponseItems
 	for i := range r {
-		items = append(items, RecipeResponseItem{
-			ID:          r[i].ID,
-			Title:       r[i].Title,
-			Ingredients: r[i].Ingredients,
-			Thumbnail:   r[i].Thumbnail,
-			CreatedAt:   r[i].CreatedAt,
-			UpdatedAt:   r[i].UpdatedAt,
-		})
+		item := RecipeResponseItem{
+			ID:        r[i].ID,
+			Title:     r[i].Title,
+			Thumbnail: r[i].Thumbnail,
+			CreatedAt: r[i].CreatedAt,
+			UpdatedAt: r[i].UpdatedAt,
+		}
+		for j := range r[i].Ingredients {
+			item.Ingredients = append(item.Ingredients, IngredientResponseItem{
+				ID:   r[i].Ingredients[j].ID,
+				Name: r[i].Ingredients[j].Name,
+			})
+		}
+		items = append(items, item)
 	}
 	rr.Data = &items
 
@@ -45,7 +52,7 @@ func NewRecipesResponse(title string, version int, r db.Recipes, total int64) Re
 type RecipeResponseItems []RecipeResponseItem
 
 // NewRecipesResponse
-func NewRecipeResponse(r *db.Recipe) RecipeResponseItem {
+func NewRecipeResponse(r *database.Recipe) RecipeResponseItem {
 	return RecipeResponseItem{
 		ID:          r.ID,
 		Title:       r.Title,
@@ -58,11 +65,18 @@ func NewRecipeResponse(r *db.Recipe) RecipeResponseItem {
 
 // RecipeResponseItem object to map a recipe item
 type RecipeResponseItem struct {
-	ID          string   `json:"id"`
-	Title       string   `json:"title"`
-	Href        string   `json:"href"`
-	Ingredients []string `json:"ingredients"`
-	Thumbnail   string   `json:"thumbnail"`
-	CreatedAt   string   `json:"createdAt"`
-	UpdatedAt   string   `json:"updatedAt"`
+	ID          int64              `json:"id"`
+	Title       string             `json:"title"`
+	Href        string             `json:"href"`
+	Ingredients IngredientResponse `json:"ingredients"`
+	Thumbnail   string             `json:"thumbnail"`
+	CreatedAt   string             `json:"createdAt"`
+	UpdatedAt   string             `json:"updatedAt"`
 }
+
+type IngredientResponseItem struct {
+	ID   int64
+	Name string
+}
+
+type IngredientResponse []IngredientResponseItem

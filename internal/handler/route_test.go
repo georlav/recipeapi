@@ -10,7 +10,7 @@ import (
 
 func TestRoutes(t *testing.T) {
 	// Init handlers
-	h := handler.NewHandler(nil, &config.Config{}, &log.Logger{})
+	h := handler.NewHandler(nil, config.Config{}, &log.Logger{})
 
 	// Init routes
 	r := handler.Routes(h)

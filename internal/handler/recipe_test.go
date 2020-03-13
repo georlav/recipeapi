@@ -12,10 +12,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/georlav/recipeapi/internal/database"
+
 	"github.com/gorilla/mux"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/db"
 	"github.com/georlav/recipeapi/internal/handler"
 )
 
@@ -33,44 +34,39 @@ func TestMain(m *testing.M) {
 	}
 
 	// Create recipes from data
-	var data struct{ Recipes db.Recipes }
+	var data struct{ Recipes database.Recipes }
 	if err := json.Unmarshal(jd, &data); err != nil {
 		log.Fatalf("failed to marshal testdata, %s", err)
 	}
 
 	// Get a recipe handle
-	recipeTbl, err := db.New(*cfg)
+	db, err := database.New(cfg.MySQL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Import data
 	for i := range data.Recipes {
-		if err := recipeTbl.Insert(data.Recipes[i]); err != nil {
+		if _, err := db.Recipe.Insert(data.Recipes[i]); err != nil {
 			log.Fatalf("failed to insert test data, %s", err)
 		}
 	}
 
 	code := m.Run()
 
-	sqlDB, err := db.NewMySQL(cfg.MySQL)
-	if err != nil {
+	if _, err := db.Handle.Exec(`SET FOREIGN_KEY_CHECKS = 0`); err != nil {
 		log.Fatal(err)
 	}
-
-	if _, err := sqlDB.Exec(`SET FOREIGN_KEY_CHECKS = 0`); err != nil {
+	if _, err := db.Handle.Exec(`TRUNCATE TABLE recipe`); err != nil {
 		log.Fatal(err)
 	}
-	if _, err := sqlDB.Exec(`TRUNCATE TABLE recipe`); err != nil {
+	if _, err := db.Handle.Exec(`TRUNCATE TABLE ingredient`); err != nil {
 		log.Fatal(err)
 	}
-	if _, err := sqlDB.Exec(`TRUNCATE TABLE ingredient`); err != nil {
+	if _, err := db.Handle.Exec(`SET FOREIGN_KEY_CHECKS = 1`); err != nil {
 		log.Fatal(err)
 	}
-	if _, err := sqlDB.Exec(`SET FOREIGN_KEY_CHECKS = 1`); err != nil {
-		log.Fatal(err)
-	}
-	if err := sqlDB.Close(); err != nil {
+	if err := db.Handle.Close(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -93,12 +89,12 @@ func TestHandler_Recipe(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	recipeTbl, err := db.New(*cfg)
+	db, err := database.New(cfg.MySQL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	h := handler.NewHandler(recipeTbl, &config.Config{}, &log.Logger{})
+	h := handler.NewHandler(db, config.Config{}, &log.Logger{})
 
 	for i := range testData {
 		tc := testData[i]
@@ -156,12 +152,12 @@ func TestHandler_Recipes(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	recipeTbl, err := db.New(*cfg)
+	db, err := database.New(cfg.MySQL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	h := handler.NewHandler(recipeTbl, &config.Config{}, &log.Logger{})
+	h := handler.NewHandler(db, config.Config{}, &log.Logger{})
 
 	for i := range testData {
 		tc := testData[i]
@@ -234,12 +230,12 @@ func TestHandler_Create(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	recipeTbl, err := db.New(*cfg)
+	db, err := database.New(cfg.MySQL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	h := handler.NewHandler(recipeTbl, &config.Config{}, &log.Logger{})
+	h := handler.NewHandler(db, config.Config{}, &log.Logger{})
 
 	for i := range testData {
 		tc := testData[i]

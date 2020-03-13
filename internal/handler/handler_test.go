@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Get a recipe handle
-	db, err := database.New(cfg.MySQL)
+	db, err := database.New(cfg.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

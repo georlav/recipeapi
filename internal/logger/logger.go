@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus" //nolint:depguard
 )
 
 type Option func(*Logger)
@@ -39,7 +39,7 @@ func NewLogger(cfg config.Logger, options ...Option) *Logger {
 
 	l.SetReportCaller(cfg.ReportCaller)
 	l.SetFormatter(&logrus.JSONFormatter{TimestampFormat: time.RFC3339Nano})
-	l.SetLevel(cfg.LogLevel)
+	l.SetLevel(logrus.Level(cfg.LogLevel))
 	if !cfg.APP.Debug {
 		l.SetOutput(ioutil.Discard)
 	}

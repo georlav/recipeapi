@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-
-	"github.com/sirupsen/logrus"
 )
 
 // Config object
@@ -46,7 +44,7 @@ type Database struct {
 
 // Logger holds the configuration for logging
 type Logger struct {
-	LogLevel     logrus.Level
+	LogLevel     uint8
 	EnableStdout bool
 	ReportCaller bool
 	APP          APP

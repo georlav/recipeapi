@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,6 +10,7 @@ import (
 	"time"
 
 	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/logger"
 )
 
 func main() {
@@ -21,17 +20,8 @@ func main() {
 		panic(fmt.Sprintf("Failed to load configuration, %s", err))
 	}
 
-	// Initialize logger
-	logger := log.New(
-		os.Stdout,
-		"",
-		log.Ldate|log.Ltime|log.Lshortfile,
-	)
-
-	// Enable debug output
-	if !cfg.APP.Debug {
-		logger.SetOutput(ioutil.Discard)
-	}
+	// Init logger
+	log := logger.NewLogger(cfg.Logger)
 
 	// Initialize server
 	s := http.Server{
@@ -44,9 +34,9 @@ func main() {
 
 	// Start listening to incoming requests
 	go func() {
-		logger.Printf("Started web server at %s://%s%s", cfg.Server.Scheme, cfg.Server.Host, s.Addr)
+		log.Printf("Started web server at %s://%s%s", cfg.Server.Scheme, cfg.Server.Host, s.Addr)
 		if err := s.ListenAndServe(); err != http.ErrServerClosed {
-			logger.Fatalf("Server error, %s", err)
+			log.Fatalf("Server error, %s", err)
 		}
 	}()
 
@@ -56,9 +46,9 @@ func main() {
 	<-sigs
 
 	// Gracefully Shutdown server
-	logger.Println("Application received a termination signal. Shutting down.")
+	log.Println("Application received a termination signal. Shutting down.")
 
 	if err := s.Shutdown(context.Background()); err != nil {
-		logger.Fatalf("Failed to gracefully shutdown http server, %s", err)
+		log.Fatalf("Failed to gracefully shutdown http server, %s", err)
 	}
 }

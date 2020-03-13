@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Config object
@@ -11,6 +13,7 @@ type Config struct {
 	APP      APP      `json:"app"`
 	Server   Server   `json:"server"`
 	Database Database `json:"database"`
+	Logger   Logger   `json:"logger"`
 }
 
 // APP holds general app configuration values
@@ -39,6 +42,14 @@ type Database struct {
 	Username string
 	Password string
 	Database string
+}
+
+// Logger holds the configuration for logging
+type Logger struct {
+	LogLevel     logrus.Level
+	EnableStdout bool
+	ReportCaller bool
+	APP          APP
 }
 
 // Load loads a json config file and returns a config object

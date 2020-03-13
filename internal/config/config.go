@@ -8,16 +8,18 @@ import (
 
 // Config object
 type Config struct {
-	APP    APP    `json:"app"`
-	Server Server `json:"Server"`
+	APP      APP      `json:"app"`
+	Server   Server   `json:"server"`
+	Database Database `json:"database"`
 }
 
 // APP holds general app configuration values
 type APP struct {
-	Debug bool `json:"debug"`
+	Version int  `json:"version"`
+	Debug   bool `json:"debug"`
 }
 
-// Server object holds the base configuration for the http server
+// Server holds the base configuration for the http server
 // ReadTimeout is the maximum duration for reading the entire request, including the body (seconds)
 // WriteTimeout is the maximum duration before timing out writes the response (seconds)
 // IdleTimeout is the maximum amount of time to wait for the next request when keep-alive is enabled (seconds)
@@ -28,6 +30,15 @@ type Server struct {
 	ReadTimeout  int64  `json:"readTimeout"`
 	WriteTimeout int64  `json:"writeTimeout"`
 	IdleTimeout  int64  `json:"idleTimeout"`
+}
+
+// Database holds the base configuration for the application db storage
+type Database struct {
+	Host     string
+	Port     int16
+	Username string
+	Password string
+	Database string
 }
 
 // Load loads a json config file and returns a config object

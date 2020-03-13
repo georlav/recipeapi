@@ -15,7 +15,8 @@ type Config struct {
 
 // APP holds general app configuration values
 type APP struct {
-	Debug bool `json:"debug"`
+	Version int  `json:"version"`
+	Debug   bool `json:"debug"`
 }
 
 // Server holds the base configuration for the http server
@@ -33,11 +34,13 @@ type Server struct {
 
 // Database holds the base configuration for the application db storage
 type Database struct {
-	Host     string
-	Port     int16
-	Username string
-	Password string
-	Database string
+	Host         string
+	Port         int16
+	Username     string
+	Password     string
+	Database     string
+	MaxIdleConns int
+	MaxOpenConns int
 }
 
 // Load loads a json config file and returns a config object

@@ -10,7 +10,7 @@ import (
 	"net/http/httputil"
 	"sync"
 
-	"github.com/georlav/recipeapi/internal/db"
+	"github.com/georlav/recipeapi/internal/database"
 )
 
 func main() {
@@ -19,14 +19,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var recipes db.Recipes
+	var recipes database.Recipes
 	if err := json.Unmarshal(data, &recipes); err != nil {
 		log.Fatal(err)
 	}
 
 	// Create a channel with recipes
-	recipesCH := func() chan db.Recipe {
-		ch := make(chan db.Recipe)
+	recipesCH := func() chan database.Recipe {
+		ch := make(chan database.Recipe)
 
 		go func() {
 			for i := range recipes {

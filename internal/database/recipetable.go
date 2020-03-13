@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -7,38 +7,43 @@ import (
 	"strings"
 )
 
-// Recipe object
-type RecipeTable struct {
-	pageSize    uint64
-	defaultCols []string
-	db          *sql.DB
+const recipeColumns = "r.id, r.title, r.thumbnail, r.url, r.created_at, r.updated_at"
+
+// RecipeFilters object
+type RecipeFilters struct {
+	Term        string
+	Ingredients []string
 }
 
-// NewRecipe creates a recipe object
-func NewRecipeTable(sqlDB *sql.DB) *RecipeTable {
+// RecipeTable object
+type RecipeTable struct {
+	db       *sql.DB
+	name     string
+	pageSize uint64
+}
+
+// NewRecipeTable object
+func NewRecipeTable(db *sql.DB) *RecipeTable {
 	return &RecipeTable{
-		defaultCols: []string{"r.id", "r.title", "r.thumbnail", "r.url", "r.created_at", "r.updated_at"},
-		pageSize:    10,
-		db:          sqlDB,
+		db:       db,
+		name:     "recipe r",
+		pageSize: 10,
 	}
 }
 
 // Get a recipe by id
-func (r *RecipeTable) Get(id string) (*Recipe, error) {
+func (rt *RecipeTable) Get(id uint64) (*Recipe, error) {
 	// nolint:gosec
-	query := fmt.Sprintf(
-		`SELECT %s FROM recipe r WHERE id = ?`,
-		strings.Join(r.defaultCols, ","),
-	)
+	query := fmt.Sprintf(`SELECT %s FROM recipe r WHERE id = ?`, recipeColumns)
 
 	var rcp Recipe
-	if err := r.db.QueryRow(query, id).Scan(
+	if err := rt.db.QueryRow(query, id).Scan(
 		&rcp.ID, &rcp.Title, &rcp.Thumbnail, &rcp.URL, &rcp.CreatedAt, &rcp.UpdatedAt,
 	); err != nil {
 		return nil, err
 	}
 
-	ri, err := r.withIngredients(rcp)
+	ri, err := rt.withIngredients(rcp)
 	if err != nil {
 		return nil, err
 	}
@@ -47,30 +52,30 @@ func (r *RecipeTable) Get(id string) (*Recipe, error) {
 }
 
 // Paginate get paginated recipes
-func (r *RecipeTable) Paginate(page uint64, flt *Filters) (Recipes, int64, error) {
+func (rt *RecipeTable) Paginate(page uint64, filters *RecipeFilters) (Recipes, int64, error) {
 	var args []interface{}
 	query := `SELECT DISTINCT r.id, r.title, r.thumbnail, r.url, r.created_at, r.updated_at 
 FROM recipe r 
 JOIN ingredient i on r.id = i.recipe_id 
 WHERE 1=1`
 
-	if flt != nil && flt.Term != "" {
+	if filters != nil && filters.Term != "" {
 		query += " AND r.title like ?"
-		args = append(args, "%"+flt.Term+"%")
+		args = append(args, "%"+filters.Term+"%")
 	}
 
-	if flt != nil && len(flt.Ingredients) > 0 {
+	if filters != nil && len(filters.Ingredients) > 0 {
 		query += fmt.Sprintf(" AND i.name in (%s)",
-			strings.TrimSuffix(strings.Repeat("?,", len(flt.Ingredients)), ","),
+			strings.TrimSuffix(strings.Repeat("?,", len(filters.Ingredients)), ","),
 		)
-		for i := range flt.Ingredients {
-			args = append(args, flt.Ingredients[i])
+		for i := range filters.Ingredients {
+			args = append(args, filters.Ingredients[i])
 		}
 	}
 	query += " GROUP BY r.id"
 
 	// count all results before applying limits
-	total, err := r.countGroup(query, args)
+	total, err := rt.countGroup(query, args)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -79,9 +84,9 @@ WHERE 1=1`
 		page--
 	}
 	query += ` LIMIT ?, ?`
-	args = append(args, r.pageSize*page, r.pageSize)
+	args = append(args, rt.pageSize*page, rt.pageSize)
 
-	rows, err := r.db.Query(query, args...)
+	rows, err := rt.db.Query(query, args...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -101,7 +106,7 @@ WHERE 1=1`
 		return recipes, 0, err
 	}
 
-	recipes, err = r.withIngredients(recipes...)
+	recipes, err = rt.withIngredients(recipes...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -109,20 +114,21 @@ WHERE 1=1`
 	return recipes, total, nil
 }
 
-// Insert updates or insert a new recipe
-func (r *RecipeTable) Insert(recipe Recipe) error {
+// Insert a new recipe, returns inserted recipe id
+func (rt *RecipeTable) Insert(recipe Recipe) (int64, error) {
 	rq := `INSERT INTO recipe (title, thumbnail, url) VALUES (?, ?, ?)`
 	// nolint:gosec
-	iq := fmt.Sprintf(`INSERT INTO ingredient (recipe_id, name) VALUES %s ON DUPLICATE KEY UPDATE name = name`,
+	iq := fmt.Sprintf(`INSERT INTO ingredient (recipe_id, name) VALUES %s`,
 		strings.TrimSuffix(strings.Repeat("(?, ?),", len(recipe.Ingredients)), ","),
 	)
 
-	tx, err := r.db.Begin()
+	tx, err := rt.db.Begin()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// transactions
+	var rid int64
 	err = func() error {
 		// Insert recipe
 		res, err := tx.Exec(rq, recipe.Title, recipe.Thumbnail, recipe.URL)
@@ -131,7 +137,7 @@ func (r *RecipeTable) Insert(recipe Recipe) error {
 		}
 
 		// Get last inserted id
-		rid, err := res.LastInsertId()
+		rid, err = res.LastInsertId()
 		if err != nil {
 			return fmt.Errorf("recipe error, %w", err)
 		}
@@ -139,7 +145,7 @@ func (r *RecipeTable) Insert(recipe Recipe) error {
 		// Insert recipe ingredients
 		var ingredients []interface{}
 		for i := range recipe.Ingredients {
-			ingredients = append(ingredients, rid, recipe.Ingredients[i])
+			ingredients = append(ingredients, rid, recipe.Ingredients[i].Name)
 		}
 		_, err = tx.Exec(iq, ingredients...)
 		if err != nil {
@@ -152,53 +158,50 @@ func (r *RecipeTable) Insert(recipe Recipe) error {
 	// Check if any transaction failed to rollback
 	if err != nil {
 		if err := tx.Rollback(); err != nil {
-			return err
+			return 0, err
 		}
-		return err
+		return 0, err
 	}
 
 	// Commit transactions
 	if err := tx.Commit(); err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return rid, nil
 }
 
 // Get recipe ingredients
-func (r *RecipeTable) withIngredients(recipes ...Recipe) (Recipes, error) {
+func (rt *RecipeTable) withIngredients(recipes ...Recipe) (Recipes, error) {
 	if len(recipes) == 0 {
 		return recipes, nil
 	}
 
 	var args []interface{}
 	// nolint:gosec
-	query := fmt.Sprintf(`select id, recipe_id, name FROM ingredient WHERE recipe_id IN (%s)`,
+	query := fmt.Sprintf(`select id, recipe_id, name, created_at, updated_at 
+FROM ingredient 
+WHERE recipe_id IN (%s)`,
 		strings.TrimSuffix(strings.Repeat("?,", len(recipes)), ","),
 	)
 	for i := range recipes {
 		args = append(args, recipes[i].ID)
 	}
 
-	rows, err := r.db.Query(query, args...)
+	rows, err := rt.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
-		var (
-			ID         int64
-			recipeID   int64
-			ingredient string
-		)
-
-		if err := rows.Scan(&ID, &recipeID, &ingredient); err != nil {
+		ing := Ingredient{}
+		if err := rows.Scan(&ing.ID, &ing.RecipeID, &ing.Name, &ing.CreatedAt, &ing.UpdatedAt); err != nil {
 			return nil, err
 		}
 
 		for i := range recipes {
-			if recipes[i].ID == fmt.Sprintf(`%d`, recipeID) {
-				recipes[i].Ingredients = append(recipes[i].Ingredients, ingredient)
+			if recipes[i].ID == ing.RecipeID {
+				recipes[i].Ingredients = append(recipes[i].Ingredients, ing)
 			}
 		}
 	}
@@ -209,7 +212,7 @@ func (r *RecipeTable) withIngredients(recipes ...Recipe) (Recipes, error) {
 	return recipes, nil
 }
 
-func (r *RecipeTable) countGroup(q string, qArgs []interface{}) (int64, error) {
+func (rt *RecipeTable) countGroup(q string, qArgs []interface{}) (int64, error) {
 	q = strings.ReplaceAll(q, "\n", " ")
 	q = strings.ReplaceAll(q, "\t", " ")
 	neqQ := strings.SplitAfter(strings.ToLower(q), " from ")
@@ -220,7 +223,7 @@ func (r *RecipeTable) countGroup(q string, qArgs []interface{}) (int64, error) {
 	cntQ := fmt.Sprintf("SELECT count(*) as count FROM (%s) as countable", q)
 
 	var total int64
-	if err := r.db.QueryRow(cntQ, qArgs...).Scan(&total); err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err := rt.db.QueryRow(cntQ, qArgs...).Scan(&total); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return 0, fmt.Errorf("unable to count, %w", err)
 	}
 

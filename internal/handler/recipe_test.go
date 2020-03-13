@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -9,6 +8,7 @@ import (
 
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/handler"
+	"github.com/georlav/recipeapi/internal/logger"
 )
 
 func TestHandler_Recipes(t *testing.T) {
@@ -16,7 +16,7 @@ func TestHandler_Recipes(t *testing.T) {
 	req := httptest.NewRequest("GET", "/recipes?p=1", nil)
 
 	// init handlers
-	h := handler.NewHandler(&config.Config{}, &log.Logger{})
+	h := handler.NewHandler(&config.Config{}, &logger.Logger{})
 
 	// Create a response recorder
 	rr := httptest.NewRecorder()

@@ -19,5 +19,13 @@
     "Database": "recipes",
     "MaxIdleConns": 5,
     "MaxOpenConns": 10
+<<<<<<< HEAD
+=======
+  },
+  "logger": {
+    "logLevel": 7,
+    "enableStdout": true,
+    "ReportCaller": true
+>>>>>>> 05-Routes
   }
 }

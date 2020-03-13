@@ -11,6 +11,7 @@ type Config struct {
 	APP      APP      `json:"app"`
 	Server   Server   `json:"server"`
 	Database Database `json:"database"`
+	Logger   Logger   `json:"logger"`
 }
 
 // APP holds general app configuration values
@@ -41,6 +42,14 @@ type Database struct {
 	Database     string
 	MaxIdleConns int
 	MaxOpenConns int
+}
+
+// Logger holds the configuration for logging
+type Logger struct {
+	LogLevel     uint8
+	EnableStdout bool
+	ReportCaller bool
+	APP          APP
 }
 
 // Load loads a json config file and returns a config object

@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
-	"github.com/georlav/recipeapi/internal/db"
+	"github.com/georlav/recipeapi/internal/database"
+
 	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -16,8 +18,9 @@ func (h Handler) Recipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "recipe id is required."), http.StatusBadRequest)
 		return
 	}
+	nID, _ := strconv.Atoi(id)
 
-	recipe, err := h.recipes.Get(id)
+	recipe, err := h.db.Recipe.Get(uint64(nID))
 	if err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "unknown recipe."), http.StatusNotFound)
 		return
@@ -39,13 +42,13 @@ func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Pass request data to filters
-	filters := db.Filters{
+	filters := database.RecipeFilters{
 		Term:        rr.Term,
 		Ingredients: rr.Ingredients,
 	}
 
 	// retrieve data from database
-	recipes, total, err := h.recipes.Paginate(rr.Page, &filters)
+	recipes, total, err := h.db.Recipe.Paginate(rr.Page, &filters)
 	if err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
 		return
@@ -74,14 +77,22 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a slice of ingredients
+	ingredients := func() (ing database.Ingredients) {
+		for i := range rc.Ingredients {
+			ing = append(ing, database.Ingredient{Name: rc.Ingredients[i]})
+		}
+
+		return ing
+	}()
+
 	// Insert new recipe
-	err := h.recipes.Insert(db.Recipe{
+	if _, err := h.db.Recipe.Insert(database.Recipe{
 		Title:       rc.Title,
 		URL:         rc.URL,
 		Thumbnail:   rc.Thumbnail,
-		Ingredients: rc.Ingredients,
-	})
-	if err != nil {
+		Ingredients: ingredients,
+	}); err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "failed to create recipe"), http.StatusInternalServerError)
 		return
 	}

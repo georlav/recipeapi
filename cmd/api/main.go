@@ -35,7 +35,7 @@ func main() {
 	}
 
 	// Get database service
-	dbs, err := database.New(cfg.MySQL)
+	dbs, err := database.New(cfg.Database)
 	if err != nil {
 		logger.Fatal(err)
 	}

@@ -15,7 +15,7 @@ type Database struct {
 	Ingredient *IngredientTable
 }
 
-func New(c config.MySQL) (*Database, error) {
+func New(c config.Database) (*Database, error) {
 	dsn, err := mysql.ParseDSN(
 		fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", c.Username, c.Password, c.Host, c.Port, c.Database),
 	)
@@ -28,8 +28,8 @@ func New(c config.MySQL) (*Database, error) {
 		return nil, fmt.Errorf("open error, %w", err)
 	}
 
-	db.SetMaxIdleConns(5)
-	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(c.MaxIdleConns)
+	db.SetMaxOpenConns(c.MaxOpenConns)
 
 	if err := db.Ping(); err != nil {
 		return nil, fmt.Errorf("ping error, %w", err)

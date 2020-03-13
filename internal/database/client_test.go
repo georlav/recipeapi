@@ -1,20 +1,20 @@
-package db_test
+package database_test
 
 import (
 	"log"
 	"testing"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/db"
+	"github.com/georlav/recipeapi/internal/database"
 )
 
-func TestNewMySQL(t *testing.T) {
+func TestNewClient(t *testing.T) {
 	cfg, err := config.Load("testdata/config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mdb, err := db.NewMySQL(cfg.MySQL)
+	mdb, err := database.NewClient(cfg.MySQL)
 	if err != nil {
 		t.Fatal(err)
 	}

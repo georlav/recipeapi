@@ -133,6 +133,9 @@ func (rt *RecipeTable) Insert(recipe Recipe) (int64, error) {
 		// Insert recipe
 		res, err := tx.Exec(rq, recipe.Title, recipe.Thumbnail, recipe.URL)
 		if err != nil {
+			if strings.Contains(err.Error(), "Error 1062") {
+				return ErrDuplicateEntry
+			}
 			return fmt.Errorf("recipe error, %w", err)
 		}
 
@@ -223,7 +226,7 @@ func (rt *RecipeTable) countGroup(q string, qArgs []interface{}) (int64, error) 
 	cntQ := fmt.Sprintf("SELECT count(*) as count FROM (%s) as countable", q)
 
 	var total int64
-	if err := rt.db.QueryRow(cntQ, qArgs...).Scan(&total); err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err := rt.db.QueryRow(cntQ, qArgs...).Scan(&total); err != nil && !errors.Is(err, ErrNoRows) {
 		return 0, fmt.Errorf("unable to count, %w", err)
 	}
 

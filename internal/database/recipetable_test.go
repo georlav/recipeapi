@@ -102,7 +102,7 @@ func TestNewRecipeTable_Insert(t *testing.T) {
 				URL:       "http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
 				Thumbnail: "http://img.recipepuppy.com/1.jpg",
 			},
-			errors.New("recipe error, Error 1062: Duplicate entry 'Ginger Champagne' for key 'recipe_title_uindex'"),
+			database.ErrDuplicateEntry,
 		},
 	}
 
@@ -118,13 +118,13 @@ func TestNewRecipeTable_Insert(t *testing.T) {
 			t.Parallel()
 
 			id, err := db.Recipe.Insert(tc.input)
-			if err != nil && err.Error() != tc.error.Error() {
+			if err != nil && !errors.Is(err, tc.error) {
 				t.Fatal(err)
 			}
 			if err == nil && id == 0 {
 				t.Fatal("Recipe expected to have an id")
 			}
-			if _, err := db.Handle.Exec("delete from recipe where id = ?", id); err != nil {
+			if _, err := db.Handle.Exec(`delete from recipe where id = ?`, id); err != nil {
 				t.Fatal(err)
 			}
 		})
@@ -188,7 +188,7 @@ func db() (*database.Database, error) {
 		log.Fatal(err)
 	}
 
-	db, err := database.New(cfg.MySQL)
+	db, err := database.New(cfg.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

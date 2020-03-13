@@ -2,19 +2,6 @@ version: '3.1'
 
 services:
 
-  mongo:
-    image: mongo:3.6
-    container_name: mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: toor
-    volumes:
-      - './data/mongo:/data/db'
-    ports:
-      - 27017:27017
-    networks:
-      - recipenetwork
-
   mysql:
     image: mysql:5.7
     container_name: mysql

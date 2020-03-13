@@ -110,22 +110,22 @@ func TestNewRecipeTable_Insert(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer func() {
-		if _, err := db.Handle.Exec("delete from recipe where id = 23"); err != nil {
-			t.Fatal(err)
-		}
-	}()
 
 	for i := range testCases {
 		tc := testCases[i]
 
 		t.Run(tc.desc, func(t *testing.T) {
+			t.Parallel()
+
 			id, err := db.Recipe.Insert(tc.input)
 			if err != nil && err.Error() != tc.error.Error() {
 				t.Fatal(err)
 			}
 			if err == nil && id == 0 {
 				t.Fatal("Recipe expected to have an id")
+			}
+			if _, err := db.Handle.Exec("delete from recipe where id = ?", id); err != nil {
+				t.Fatal(err)
 			}
 		})
 	}

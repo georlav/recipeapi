@@ -2,19 +2,17 @@ package handler_test
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
 
-	"github.com/georlav/recipeapi/internal/database"
-
-	"github.com/gorilla/mux"
-
 	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/database"
 	"github.com/georlav/recipeapi/internal/handler"
+	"github.com/georlav/recipeapi/internal/logger"
+	"github.com/gorilla/mux"
 )
 
 func TestHandler_Recipe(t *testing.T) {
@@ -30,15 +28,15 @@ func TestHandler_Recipe(t *testing.T) {
 
 	cfg, err := config.Load("testdata/config.json")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	db, err := database.New(cfg.Database)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, config.Config{}, &log.Logger{})
+	h := handler.NewHandler(db, config.Config{}, &logger.Logger{})
 
 	for i := range testData {
 		tc := testData[i]
@@ -93,15 +91,15 @@ func TestHandler_Recipes(t *testing.T) {
 
 	cfg, err := config.Load("testdata/config.json")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	db, err := database.New(cfg.Database)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, config.Config{}, &log.Logger{})
+	h := handler.NewHandler(db, config.Config{}, &logger.Logger{})
 
 	for i := range testData {
 		tc := testData[i]
@@ -171,15 +169,15 @@ func TestHandler_Create(t *testing.T) {
 
 	cfg, err := config.Load("testdata/config.json")
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	db, err := database.New(cfg.Database)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, config.Config{}, &log.Logger{})
+	h := handler.NewHandler(db, config.Config{}, &logger.Logger{})
 
 	for i := range testData {
 		tc := testData[i]

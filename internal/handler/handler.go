@@ -1,19 +1,18 @@
 package handler
 
 import (
-	"database/sql"
-	"log"
-
 	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/database"
+	"github.com/georlav/recipeapi/internal/logger"
 )
 
 type Handler struct {
-	db  *sql.DB
+	db  *database.Database
 	cfg *config.Config
-	log *log.Logger
+	log *logger.Logger
 }
 
-func NewHandler(db *sql.DB, c *config.Config, l *log.Logger) *Handler {
+func NewHandler(db *database.Database, c *config.Config, l *logger.Logger) *Handler {
 	return &Handler{
 		db:  db,
 		cfg: c,

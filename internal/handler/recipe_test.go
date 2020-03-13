@@ -33,7 +33,7 @@ func TestHandler_Recipe(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	db, err := database.New(cfg.MySQL)
+	db, err := database.New(cfg.Database)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -96,7 +96,7 @@ func TestHandler_Recipes(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	db, err := database.New(cfg.MySQL)
+	db, err := database.New(cfg.Database)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -174,7 +174,7 @@ func TestHandler_Create(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	db, err := database.New(cfg.MySQL)
+	db, err := database.New(cfg.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

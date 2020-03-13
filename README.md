@@ -6,8 +6,8 @@
 
 # Puppy API rip off (exercise)
 Simple api that serves recipes for puppies. This project is a step by step guide on how to create a simple api using
-Go programming language. The purpose of the project is to demonstrate to newcommers the language basic features 
-and concepts.
+Go programming language. The purpose of the project is to demonstrate to new comers the language basic features and
+concepts.
 
 The exercise is based on [recipepuppy](http://www.recipepuppy.com/) free api. All the puppy recipes used were also 
 retrieved from there.
@@ -23,62 +23,58 @@ retrieved from there.
  * 08-Middleware
  * 09-CI
 
-There are no notes/comments for each branch. All the above branches have been merged into master
-
 ### Prerequisites
  * Go
  * Docker
 
-API can work both with mysql or mongodb, a docker compose file is provided for faster setup. To easily start and 
-initialize databases run
+### Setup database and import schema
 ```bash
 make db
 ```
 
-Starts database containers and imports all required dumps to mysql main and test db. You only need to run this command
-when working with fresh containers, use docker compose to control your containers after the initial setup.
+### Starting database container
 ```bash
 docker-compose up -d
 ```
    
 ### Importing data
-When on master branch or after reaching 07-Handler-real-data branch you can import data by running the following 
+When on master or after reaching 07-Handler-real-data branch you can import data by running the following 
 commands. 
 
-Start the api.
+Start the API.
 ```bash
 go run cmd/api/main.go
 ``` 
 
-Then run the import cmd to start posting data to the api, this will read the recipes.json on the root folder and will
-start posting data to the api
+Then run the import cmd. Import reads recipes.json, creates recipe requests from read data and posts requests to recipe
+ API.
 ```bash
 go run cmd/import/main.go
 ``` 
 
 ### Configuration
-Most of the project values can be configured by editing config.json. File located at the project root folder.
+Most of the project values can be configured by editing config.json, config file is located under the project 
+root folder.
 
-### Running the tests
+### Running tests
 ```bash
 make test
 ```
 
-### Running the project
+### Running project
 ```bash
 make run
 ```
 
-### Building the project
+### Building project
 ```bash
 make build
 ```
 
-### Running the linter
+### Running linter
 ```bash
 make lint
 ```
-
 if you are behind a corporate firewall using a custom certificate use
 ```bash
 make lint-insecure

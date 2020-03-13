@@ -24,10 +24,10 @@ func TestMain(m *testing.M) {
 
 	var data struct{ Recipes database.Recipes }
 	if err := json.Unmarshal(b, &data); err != nil {
-		log.Fatalf("failed to load test data, %s", err)
+		log.Fatalf("failed to unmarshal test data, %s", err)
 	}
 
-	db, err := database.New(cfg.MySQL)
+	db, err := database.New(cfg.Database)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,10 +44,10 @@ func TestMain(m *testing.M) {
 	if _, err := db.Handle.Exec(`SET FOREIGN_KEY_CHECKS = 0`); err != nil {
 		log.Fatal(err)
 	}
-	if _, err := db.Handle.Exec(`TRUNCATE TABLE recipe`); err != nil {
+	if _, err := db.Handle.Exec(`TRUNCATE TABLE ingredient`); err != nil {
 		log.Fatal(err)
 	}
-	if _, err := db.Handle.Exec(`TRUNCATE TABLE ingredient`); err != nil {
+	if _, err := db.Handle.Exec(`TRUNCATE TABLE recipe`); err != nil {
 		log.Fatal(err)
 	}
 	if _, err := db.Handle.Exec(`SET FOREIGN_KEY_CHECKS = 1`); err != nil {
@@ -66,7 +66,7 @@ func TestNewDatabase(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	db, err := database.New(cfg.MySQL)
+	db, err := database.New(cfg.Database)
 	if err != nil {
 		t.Fatal(err)
 	}

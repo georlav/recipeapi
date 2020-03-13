@@ -4,20 +4,20 @@ import (
 	"log"
 
 	"github.com/georlav/recipeapi/internal/config"
-	"github.com/georlav/recipeapi/internal/db"
+	"github.com/georlav/recipeapi/internal/database"
 	"github.com/gorilla/schema"
 )
 
 type Handler struct {
-	recipes db.Queryable
+	db      *database.Database
 	decoder *schema.Decoder
-	cfg     *config.Config
+	cfg     config.Config
 	log     *log.Logger
 }
 
-func NewHandler(r db.Queryable, c *config.Config, l *log.Logger) *Handler {
+func NewHandler(db *database.Database, c config.Config, l *log.Logger) *Handler {
 	return &Handler{
-		recipes: r,
+		db:      db,
 		decoder: schema.NewDecoder(),
 		cfg:     c,
 		log:     l,

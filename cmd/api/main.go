@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/georlav/recipeapi/internal/db"
+	"github.com/georlav/recipeapi/internal/database"
 
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/handler"
@@ -35,13 +35,13 @@ func main() {
 	}
 
 	// Get database service
-	dbs, err := db.New(*cfg)
+	dbs, err := database.New(cfg.MySQL)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
 	// Initialize handlers
-	h := handler.NewHandler(dbs, cfg, logger)
+	h := handler.NewHandler(dbs, *cfg, logger)
 
 	// Initialize API routes
 	r := handler.Routes(h)

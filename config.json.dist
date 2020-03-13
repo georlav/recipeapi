@@ -16,6 +16,13 @@
     "Port": 3316,
     "Username": "root",
     "Password": "pass",
-    "Database": "recipes"
+    "Database": "recipes",
+    "MaxIdleConns": 5,
+    "MaxOpenConns": 10
+  },
+  "logger": {
+    "logLevel": 7,
+    "enableStdout": true,
+    "ReportCaller": true
   }
 }

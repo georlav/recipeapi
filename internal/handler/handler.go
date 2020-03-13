@@ -1,17 +1,16 @@
 package handler
 
 import (
-	"log"
-
 	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/logger"
 )
 
 type Handler struct {
 	cfg *config.Config
-	log *log.Logger
+	log *logger.Logger
 }
 
-func NewHandler(c *config.Config, l *log.Logger) *Handler {
+func NewHandler(c *config.Config, l *logger.Logger) *Handler {
 	return &Handler{
 		cfg: c,
 		log: l,

@@ -1,7 +1,6 @@
 {
   "app": {
-    "debug": true,
-    "version": 1
+    "version": "1"
   },
   "server": {
     "scheme": "http",
@@ -23,7 +22,11 @@
 =======
   },
   "logger": {
+<<<<<<< HEAD
     "logLevel": 7,
+=======
+    "logLevel": 6,
+>>>>>>> 04-Handlers
     "enableStdout": true,
     "ReportCaller": true
 >>>>>>> 05-Routes

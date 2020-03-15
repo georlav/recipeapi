@@ -16,8 +16,7 @@ type Config struct {
 
 // APP holds general app configuration values
 type APP struct {
-	Version int  `json:"version"`
-	Debug   bool `json:"debug"`
+	Version int `json:"version"`
 }
 
 // Server holds the base configuration for the http server
@@ -47,7 +46,7 @@ type Logger struct {
 	LogLevel     uint8
 	EnableStdout bool
 	ReportCaller bool
-	APP          APP
+	AppVersion   int
 }
 
 // Load loads a json config file and returns a config object

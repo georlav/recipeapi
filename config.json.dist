@@ -1,6 +1,5 @@
 {
   "app": {
-    "debug": true,
     "version": 1
   },
   "server": {
@@ -21,7 +20,7 @@
     "MaxOpenConns": 10
   },
   "logger": {
-    "logLevel": 7,
+    "logLevel": 6,
     "enableStdout": true,
     "ReportCaller": true
   }

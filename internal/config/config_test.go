@@ -9,10 +9,11 @@ import (
 
 func TestLoad(t *testing.T) {
 	t.Run("Should successfully parse", func(t *testing.T) {
-		_, err := config.Load("testdata/valid.json")
+		cfg, err := config.Load("testdata/valid.json")
 		if err != nil {
 			t.Fatal(err)
 		}
+		t.Log(cfg.APP)
 	})
 
 	t.Run("Should fail to parse due to invalid format", func(t *testing.T) {

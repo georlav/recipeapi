@@ -40,7 +40,7 @@ func NewLogger(cfg config.Logger, options ...Option) *Logger {
 	l.SetReportCaller(cfg.ReportCaller)
 	l.SetFormatter(&logrus.JSONFormatter{TimestampFormat: time.RFC3339Nano})
 	l.SetLevel(logrus.Level(cfg.LogLevel))
-	if !cfg.APP.Debug {
+	if !cfg.EnableStdout {
 		l.SetOutput(ioutil.Discard)
 	}
 

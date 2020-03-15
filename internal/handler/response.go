@@ -17,7 +17,7 @@ type Metadata struct {
 }
 
 // NewRecipesResponse
-func NewRecipesResponse(title string, version string, r database.Recipes, total int64) RecipesResponse {
+func NewRecipesResponse(title, version string, r database.Recipes, total int64) RecipesResponse {
 	rr := RecipesResponse{
 		Title:   title,
 		Version: version,

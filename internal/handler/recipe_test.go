@@ -44,7 +44,7 @@ func TestHandler_Recipe(t *testing.T) {
 		tc := testData[i]
 
 		t.Run(fmt.Sprintf(`Get recipe with id %d`, tc.input), func(t *testing.T) {
-			//t.Parallel()
+			t.Parallel()
 
 			req := httptest.NewRequest("GET", fmt.Sprintf("/recipes/%d", tc.input), nil)
 			muxReq := mux.SetURLVars(req, map[string]string{

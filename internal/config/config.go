@@ -16,7 +16,7 @@ type Config struct {
 
 // APP holds general app configuration values
 type APP struct {
-	Version int `json:"version"`
+	Version string `json:"version"`
 }
 
 // Server holds the base configuration for the http server
@@ -50,15 +50,17 @@ type Logger struct {
 }
 
 // Load loads a json config file and returns a config object
-func Load(cfgFile string) (cfg *Config, err error) {
+func Load(cfgFile string) (*Config, error) {
 	b, err := ioutil.ReadFile("./" + cfgFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open config file %s, %w", cfgFile, err)
 	}
 
+	cfg := Config{}
 	if err := json.Unmarshal(b, &cfg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config file %s, %w", cfgFile, err)
 	}
+	cfg.Logger.AppVersion = cfg.APP.Version
 
-	return cfg, nil
+	return &cfg, nil
 }

@@ -5,7 +5,7 @@ import "github.com/georlav/recipeapi/internal/database"
 // RecipeResponse recipe response object
 type RecipesResponse struct {
 	Title    string               `json:"title"`
-	Version  int                  `json:"version"`
+	Version  string               `json:"version"`
 	Href     string               `json:"href"`
 	Data     *RecipeResponseItems `json:"data"`
 	Metadata Metadata             `json:"metadata"`
@@ -17,7 +17,7 @@ type Metadata struct {
 }
 
 // NewRecipesResponse
-func NewRecipesResponse(title string, version int, r database.Recipes, total int64) RecipesResponse {
+func NewRecipesResponse(title string, version string, r database.Recipes, total int64) RecipesResponse {
 	rr := RecipesResponse{
 		Title:   title,
 		Version: version,

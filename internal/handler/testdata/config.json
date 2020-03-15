@@ -15,7 +15,7 @@
     "Port": 3316,
     "Username": "root",
     "Password": "pass",
-    "Database": "recipes",
+    "Database": "recipes_test",
     "MaxIdleConns": 5,
     "MaxOpenConns": 10
   },

@@ -1,7 +1,6 @@
 {
   "app": {
-    "debug": true,
-    "version": 1
+    "version": "1"
   },
   "server": {
     "scheme": "http",
@@ -19,5 +18,10 @@
     "Database": "recipes_test",
     "MaxIdleConns": 5,
     "MaxOpenConns": 10
+  },
+  "logger": {
+    "logLevel": 6,
+    "enableStdout": true,
+    "ReportCaller": true
   }
 }

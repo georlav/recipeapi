@@ -46,7 +46,7 @@ type Logger struct {
 	LogLevel     uint8
 	EnableStdout bool
 	ReportCaller bool
-	AppVersion   int
+	AppVersion   string
 }
 
 // Load loads a json config file and returns a config object

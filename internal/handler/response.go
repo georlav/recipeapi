@@ -53,10 +53,18 @@ type RecipeResponseItems []RecipeResponseItem
 
 // NewRecipesResponse
 func NewRecipeResponse(r *database.Recipe) RecipeResponseItem {
+	ingredients := IngredientResponse{}
+	for i := range r.Ingredients {
+		ingredients = append(ingredients, IngredientResponseItem{
+			ID:   r.Ingredients[i].ID,
+			Name: r.Ingredients[i].Name,
+		})
+	}
+
 	return RecipeResponseItem{
 		ID:          r.ID,
 		Title:       r.Title,
-		Ingredients: nil,
+		Ingredients: ingredients,
 		Thumbnail:   r.Thumbnail,
 		CreatedAt:   r.CreatedAt,
 		UpdatedAt:   r.UpdatedAt,
@@ -75,8 +83,8 @@ type RecipeResponseItem struct {
 }
 
 type IngredientResponseItem struct {
-	ID   int64
-	Name string
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 type IngredientResponse []IngredientResponseItem

@@ -5,7 +5,7 @@ import "github.com/georlav/recipeapi/internal/database"
 // RecipeResponse recipe response object
 type RecipesResponse struct {
 	Title    string               `json:"title"`
-	Version  int                  `json:"version"`
+	Version  string               `json:"version"`
 	Href     string               `json:"href"`
 	Data     *RecipeResponseItems `json:"data"`
 	Metadata Metadata             `json:"metadata"`
@@ -17,7 +17,7 @@ type Metadata struct {
 }
 
 // NewRecipesResponse
-func NewRecipesResponse(title string, version int, r database.Recipes, total int64) RecipesResponse {
+func NewRecipesResponse(title, version string, r database.Recipes, total int64) RecipesResponse {
 	rr := RecipesResponse{
 		Title:   title,
 		Version: version,
@@ -53,10 +53,18 @@ type RecipeResponseItems []RecipeResponseItem
 
 // NewRecipesResponse
 func NewRecipeResponse(r *database.Recipe) RecipeResponseItem {
+	ingredients := IngredientResponse{}
+	for i := range r.Ingredients {
+		ingredients = append(ingredients, IngredientResponseItem{
+			ID:   r.Ingredients[i].ID,
+			Name: r.Ingredients[i].Name,
+		})
+	}
+
 	return RecipeResponseItem{
 		ID:          r.ID,
 		Title:       r.Title,
-		Ingredients: nil,
+		Ingredients: ingredients,
 		Thumbnail:   r.Thumbnail,
 		CreatedAt:   r.CreatedAt,
 		UpdatedAt:   r.UpdatedAt,
@@ -75,8 +83,8 @@ type RecipeResponseItem struct {
 }
 
 type IngredientResponseItem struct {
-	ID   int64
-	Name string
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 type IngredientResponse []IngredientResponseItem

@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -23,6 +24,7 @@ func TestHandler_Recipe(t *testing.T) {
 	}{
 		{1, "Ginger Champagne", http.StatusOK},
 		{2, "Potato and Cheese Frittata", http.StatusOK},
+		{0, "", http.StatusBadRequest},
 		{9999, "souvlaki", http.StatusNotFound},
 	}
 
@@ -43,11 +45,15 @@ func TestHandler_Recipe(t *testing.T) {
 
 		t.Run(fmt.Sprintf(`Get recipe with id %d`, tc.input), func(t *testing.T) {
 			t.Parallel()
-			req := httptest.NewRequest("GET", fmt.Sprintf("/recipes/%d", tc.input), nil)
 
+			req := httptest.NewRequest("GET", fmt.Sprintf("/recipes/%d", tc.input), nil)
 			muxReq := mux.SetURLVars(req, map[string]string{
 				"id": fmt.Sprintf("%d", tc.input),
 			})
+
+			if tc.input == 0 {
+				muxReq = mux.SetURLVars(req, map[string]string{})
+			}
 
 			// initialize response recorder to monitor handler response data
 			rr := httptest.NewRecorder()
@@ -57,8 +63,20 @@ func TestHandler_Recipe(t *testing.T) {
 			if rr.Code != tc.expectedCode {
 				t.Fatalf("Wrong status code got %d expected %d, %s", http.StatusOK, rr.Code, rr.Body.String())
 			}
-			if http.StatusOK == tc.expectedCode && !strings.Contains(rr.Body.String(), tc.resultTitle) {
-				t.Fatalf("Expected to have result with title %s", tc.resultTitle)
+
+			if http.StatusOK == rr.Code {
+				if !strings.Contains(rr.Body.String(), tc.resultTitle) {
+					t.Fatalf("Expected to have result with title %s", tc.resultTitle)
+				}
+
+				respData := handler.RecipeResponseItem{}
+				if err := json.Unmarshal(rr.Body.Bytes(), &respData); err != nil {
+					t.Fatal(err)
+				}
+
+				if len(respData.Ingredients) == 0 {
+					t.Fatal("Expected to have at least one ingredient")
+				}
 			}
 		})
 	}

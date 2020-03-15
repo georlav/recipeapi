@@ -20,11 +20,7 @@
     "MaxOpenConns": 10
   },
   "logger": {
-<<<<<<< HEAD
-    "logLevel": 7,
-=======
     "logLevel": 6,
->>>>>>> 04-Handlers
     "enableStdout": true,
     "ReportCaller": true
   }

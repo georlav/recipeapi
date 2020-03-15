@@ -54,10 +54,10 @@ func (rt *RecipeTable) Get(id uint64) (*Recipe, error) {
 // Paginate get paginated recipes
 func (rt *RecipeTable) Paginate(page uint64, filters *RecipeFilters) (Recipes, int64, error) {
 	var args []interface{}
-	query := `SELECT DISTINCT r.id, r.title, r.thumbnail, r.url, r.created_at, r.updated_at 
+	query := fmt.Sprintf(`SELECT DISTINCT %s 
 FROM recipe r 
 JOIN ingredient i on r.id = i.recipe_id 
-WHERE 1=1`
+WHERE 1=1`, recipeColumns)
 
 	if filters != nil && filters.Term != "" {
 		query += " AND r.title like ?"
@@ -182,9 +182,10 @@ func (rt *RecipeTable) withIngredients(recipes ...Recipe) (Recipes, error) {
 
 	var args []interface{}
 	// nolint:gosec
-	query := fmt.Sprintf(`select id, recipe_id, name, created_at, updated_at 
-FROM ingredient 
+	query := fmt.Sprintf(`select %s 
+FROM ingredient i 
 WHERE recipe_id IN (%s)`,
+		ingredientColumns,
 		strings.TrimSuffix(strings.Repeat("?,", len(recipes)), ","),
 	)
 	for i := range recipes {

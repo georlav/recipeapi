@@ -1,6 +1,6 @@
 {
   "app": {
-    "version": 1
+    "version": "1"
   },
   "server": {
     "scheme": "http",
@@ -15,7 +15,7 @@
     "Port": 3316,
     "Username": "root",
     "Password": "pass",
-    "Database": "recipes_test",
+    "Database": "recipes",
     "MaxIdleConns": 5,
     "MaxOpenConns": 10
   },

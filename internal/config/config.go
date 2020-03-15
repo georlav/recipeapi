@@ -16,7 +16,7 @@ type Config struct {
 
 // APP holds general app configuration values
 type APP struct {
-	Version int `json:"version"`
+	Version string `json:"version"`
 }
 
 // Server holds the base configuration for the http server

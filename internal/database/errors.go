@@ -5,5 +5,5 @@ import (
 	"errors"
 )
 
-var ErrDuplicateEntry = errors.New("item already exists")
+var ErrDuplicateEntry = errors.New("already exists")
 var ErrNoRows = sql.ErrNoRows

@@ -10,7 +10,7 @@ import (
 	"net/http/httputil"
 	"sync"
 
-	"github.com/georlav/recipeapi/internal/database"
+	"github.com/georlav/recipeapi/internal/handler"
 )
 
 func main() {
@@ -19,18 +19,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var recipes database.Recipes
-	if err := json.Unmarshal(data, &recipes); err != nil {
+	var recipeRequests []handler.RecipeCreateRequest
+	if err := json.Unmarshal(data, &recipeRequests); err != nil {
 		log.Fatal(err)
 	}
 
-	// Create a channel with recipes
-	recipesCH := func() chan database.Recipe {
-		ch := make(chan database.Recipe)
+	// Create a channel of recipe request data
+	recipesCH := func() chan handler.RecipeCreateRequest {
+		ch := make(chan handler.RecipeCreateRequest)
 
 		go func() {
-			for i := range recipes {
-				ch <- recipes[i]
+			for i := range recipeRequests {
+				ch <- recipeRequests[i]
 			}
 			close(ch)
 		}()
@@ -56,7 +56,7 @@ func main() {
 				}
 
 				resp, err := http.Post(
-					"http://127.0.0.1:8080/api/v1/recipes", "application/json", bytes.NewReader(payload),
+					"http://127.0.0.1:8080/api/recipes", "application/json", bytes.NewReader(payload),
 				)
 				if err != nil {
 					log.Println(err)
@@ -81,6 +81,6 @@ func main() {
 
 	wg.Wait()
 
-	fmt.Printf("File has %d recipes\n", len(recipes))
+	fmt.Printf("File has %d recipes\n", len(recipeRequests))
 	fmt.Printf("Imported %d recipes\n", imported)
 }

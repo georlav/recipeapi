@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/georlav/recipeapi/internal/database"
-
 	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 )

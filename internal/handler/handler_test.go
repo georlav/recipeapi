@@ -9,6 +9,7 @@ import (
 
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/database"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestMain(m *testing.M) {
@@ -43,9 +44,26 @@ func TestMain(m *testing.M) {
 		}
 	}
 
+	// Create a user
+	hash, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, err := db.User.Insert(database.User{
+		Username: "username1",
+		Password: string(hash),
+		FullName: "test user",
+		Email:    "test@test.gr",
+	}); err != nil {
+		log.Fatal(err)
+	}
+
 	code := m.Run()
 
 	if _, err := db.Handle.Exec(`SET FOREIGN_KEY_CHECKS = 0`); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := db.Handle.Exec(`TRUNCATE TABLE user`); err != nil {
 		log.Fatal(err)
 	}
 	if _, err := db.Handle.Exec(`TRUNCATE TABLE recipe`); err != nil {

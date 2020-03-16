@@ -51,6 +51,17 @@ func NewRecipesResponse(title, version string, r database.Recipes, total int64) 
 // RecipeResponseItem object to map recipe items
 type RecipeResponseItems []RecipeResponseItem
 
+// RecipeResponseItem object to map a recipe item
+type RecipeResponseItem struct {
+	ID          int64              `json:"id"`
+	Title       string             `json:"title"`
+	Href        string             `json:"href"`
+	Ingredients IngredientResponse `json:"ingredients"`
+	Thumbnail   string             `json:"thumbnail"`
+	CreatedAt   string             `json:"createdAt"`
+	UpdatedAt   string             `json:"updatedAt"`
+}
+
 // NewRecipesResponse
 func NewRecipeResponse(r *database.Recipe) RecipeResponseItem {
 	ingredients := IngredientResponse{}
@@ -71,20 +82,40 @@ func NewRecipeResponse(r *database.Recipe) RecipeResponseItem {
 	}
 }
 
-// RecipeResponseItem object to map a recipe item
-type RecipeResponseItem struct {
-	ID          int64              `json:"id"`
-	Title       string             `json:"title"`
-	Href        string             `json:"href"`
-	Ingredients IngredientResponse `json:"ingredients"`
-	Thumbnail   string             `json:"thumbnail"`
-	CreatedAt   string             `json:"createdAt"`
-	UpdatedAt   string             `json:"updatedAt"`
-}
-
+// IngredientResponseItem object to map single ingredient
 type IngredientResponseItem struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }
 
+// IngredientResponseItem object to map slice of ingredients
 type IngredientResponse []IngredientResponseItem
+
+// UserProfileResponse object to map user profile response
+type UserProfileResponse struct {
+	ID        int64
+	Username  string `json:"username"`
+	FullName  string `json:"fullName"`
+	Email     string `json:"email"`
+	Active    bool   `json:"active"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+
+// NewUserProfileResponse creates a new UserProfileResponse object
+func NewUserProfileResponse(u database.User) UserProfileResponse {
+	return UserProfileResponse{
+		ID:        u.ID,
+		Username:  u.Username,
+		FullName:  u.FullName,
+		Email:     u.Email,
+		Active:    u.Active,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
+	}
+}
+
+// TokenResponse map token response
+type TokenResponse struct {
+	Token string `json:"token"`
+}

@@ -156,8 +156,6 @@ func TestUserTable_Insert(t *testing.T) {
 		tc := testCases[i]
 
 		t.Run(tc.desc, func(t *testing.T) {
-			t.Parallel()
-
 			id, err := db.User.Insert(tc.input)
 			if err != nil && !errors.Is(err, tc.error) {
 				t.Fatal(err)

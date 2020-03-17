@@ -12,13 +12,9 @@ func Routes(h *Handler) *mux.Router {
 	)
 
 	// Product API handlers
-	apiV1Prefix := "v1"
-	apiV1 := r.PathPrefix("/api/" + apiV1Prefix).Subrouter()
-	apiV1.HandleFunc("/recipes/{id}", nil).Methods("GET").Name("recipe")
-	apiV1.HandleFunc("/recipes", h.Recipes).Methods("GET").Name("recipes")
-
-	// Health endpoint
-	r.HandleFunc("/health", nil).Methods("GET").Name("health")
+	api := r.PathPrefix("/api").Subrouter()
+	api.HandleFunc("/recipes", h.Recipes).Methods("GET").Name("recipes")
+	api.HandleFunc("/recipes/{id}", h.Recipe).Methods("GET").Name("recipe")
 
 	return r
 }

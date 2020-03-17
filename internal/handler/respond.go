@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus" //nolint:depguard
 )
 
 // Respond converts a Go value to JSON and sends it to the client.
@@ -22,8 +22,6 @@ func (h *Handler) respond(w http.ResponseWriter, data interface{}, statusCode in
 	if err := json.NewEncoder(w).Encode(&data); err != nil {
 		h.respondError(w, err)
 	}
-
-	return
 }
 
 func (h *Handler) respondError(w http.ResponseWriter, err error) {

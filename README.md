@@ -22,35 +22,30 @@ retrieved from there.
  * 07-Handler-real-data
  * 08-Middleware
  * 09-CI
+ * 10-Authentication
 
 ### Prerequisites
  * Go
  * Docker
 
-### Setup database and import schema
+### Setup databases
+Set up required databases. At each execution recreates database and re imports data.
 ```bash
 make db
+```
+Set up/reset only dev-db
+```bash
+make db-dev
+```
+Set up/reset only test-db
+```bash
+make db-test
 ```
 
 ### Starting database container
 ```bash
 docker-compose up -d
 ```
-   
-### Importing data
-When on master or after reaching 07-Handler-real-data branch you can import data by running the following 
-commands. 
-
-Start the API.
-```bash
-go run cmd/api/main.go
-``` 
-
-Then run the import cmd. Import reads recipes.json, creates recipe requests from read data and posts requests to recipe
- API.
-```bash
-go run cmd/import/main.go
-``` 
 
 ### Configuration
 Most of the project values can be configured by editing config.json, config file is located under the project 
@@ -80,11 +75,21 @@ if you are behind a corporate firewall using a custom certificate use
 make lint-insecure
 ```
 
-### Usage example
-Following link should work when you reach 07-Handler-real-data branch or when on master
+### Usage examples
 ```
-http://127.0.0.1:8080/api/?ingredient=onions&ingredient=garlic&term=omelet&page=1
+http://127.0.0.1:8080/api/recipe/1 [GET]
+http://127.0.0.1:8080/api/recipes?ingredient=onions&ingredient=garlic&term=omelet&page=1 [GET]
+http://127.0.0.1:8080/api/user/signup [POST]
+http://127.0.0.1:8080/api/user/signup [POST]
+http://127.0.0.1:8080/api/user [GET]
 ```
+
+### Postman
+For your convenience a postman collection/environment file is available at
+```
+api/Recipes.postman_collection.json
+api/Recipes.postman_environment.json
+``` 
 
 Available Parameters explanation:
 - ingredient : list of ingredients

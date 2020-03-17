@@ -11,21 +11,17 @@
     "idleTimeout": 30
   },
   "database": {
-    "host": "127.0.0.1",
-    "port": 3316,
-    "username": "root",
-    "password": "pass",
-    "database": "recipes_test",
-    "maxIdleConns": 5,
-    "maxOpenConns": 10
+    "Host": "127.0.0.1",
+    "Port": 3316,
+    "Username": "root",
+    "Password": "pass",
+    "Database": "recipes_handlers_test",
+    "MaxIdleConns": 5,
+    "MaxOpenConns": 10
   },
   "logger": {
     "logLevel": 6,
-    "enableStdout": false,
+    "enableStdout": true,
     "ReportCaller": true
-  },
-  "token": {
-    "secret": "2s5u8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@McQfTjWnZr4u7x!A%C*F-JaNdRgUkXp2s5v8y/B?E(G+KbPeShVmYq3t6w9z$C&F)J@McQfTjWnZr4u7x!A%D*G-KaPdRgUkXp2s5v8y/B?E(H+MbQeThVmYq3t6w9z$C&F)J@NcRfUjXnZr4u7x!A%D*G-KaPdSgVkYp3s6v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*",
-    "ttl": 60
   }
 }

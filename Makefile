@@ -22,6 +22,9 @@ db-test:
 	docker exec mysql /bin/sh -c 'mysql -h 127.0.0.1 -u root -ppass -e "DROP DATABASE IF EXISTS recipes_test"'
 	docker exec mysql /bin/sh -c 'mysql -h 127.0.0.1 -u root -ppass -e "CREATE DATABASE recipes_test"'
 	docker exec mysql /bin/sh -c "mysql -h 127.0.0.1 -u root -ppass recipes_test < recipes-schema.sql"
+	docker exec mysql /bin/sh -c 'mysql -h 127.0.0.1 -u root -ppass -e "DROP DATABASE IF EXISTS recipes_handlers_test"'
+	docker exec mysql /bin/sh -c 'mysql -h 127.0.0.1 -u root -ppass -e "CREATE DATABASE recipes_handlers_test"'
+	docker exec mysql /bin/sh -c "mysql -h 127.0.0.1 -u root -ppass recipes_handlers_test < recipes-schema.sql"
 db:
 	docker-compose up -d &&	sleep 5
 	make db-dev

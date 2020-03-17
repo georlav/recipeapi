@@ -85,7 +85,7 @@ http://127.0.0.1:8080/api/user [GET]
 ```
 
 ### Postman
-For your convenience a postman collection/environment file is available at
+For your convenience a postman collection/environment files are available at
 ```
 api/Recipes.postman_collection.json
 api/Recipes.postman_environment.json

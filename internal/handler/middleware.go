@@ -37,7 +37,10 @@ func (h Handler) AuthorizationMiddleware(next http.Handler) http.Handler {
 			return []byte(h.cfg.Token.Secret), nil
 		})
 		if err != nil || !token.Valid {
-			http.Error(w, fmt.Sprintf(`{"error": "invalid token"}`), http.StatusUnauthorized)
+			h.respondError(w, APIError{
+				Message:    "invalid token",
+				StatusCode: http.StatusUnauthorized,
+			})
 			return
 		}
 

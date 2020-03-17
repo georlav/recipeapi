@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 
 	"github.com/georlav/recipeapi/internal/database"
@@ -13,65 +13,62 @@ import (
 func (h Handler) User(w http.ResponseWriter, r *http.Request) {
 	token, err := h.getToken(r)
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusUnauthorized)
+		h.respondError(w, APIError{Message: err.Error(), StatusCode: http.StatusUnauthorized})
 		return
 	}
 
 	user, err := h.db.User.Get(uint64(token.UserID))
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "unknown user"), http.StatusNotFound)
+		h.respondError(w, APIError{Message: "unknown user", StatusCode: http.StatusNotFound})
 		return
 	}
 
-	resp := NewUserProfileResponse(*user)
-	if err := json.NewEncoder(w).Encode(&resp); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
-	}
+	h.respond(w, NewUserProfileResponse(*user), http.StatusOK)
 }
 
 func (h Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	si := SignInRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&si); err != nil {
-		http.Error(
-			w,
-			fmt.Sprintf(`{"error": "%s"}`, http.StatusText(http.StatusBadRequest)),
-			http.StatusBadRequest,
-		)
+		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
 	// Validate sign up request
 	v := validator.New()
 	if err := v.Struct(si); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
 	// Get user
 	u, err := h.db.User.GetByUsername(si.Username)
 	if err != nil {
-		http.Error(w, `{"error": "unknown user"}`, http.StatusUnauthorized)
+		h.respondError(w, APIError{
+			Message:    "You have entered an invalid username or password",
+			StatusCode: http.StatusUnauthorized,
+		})
 		return
 	}
 
 	// User exists check password
 	if err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(si.Password)); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusUnauthorized)
+		h.respondError(w, APIError{
+			Message:    "You have entered an invalid username or password",
+			StatusCode: http.StatusUnauthorized,
+		})
 		return
 	}
 
 	// User password is correct create token
 	token, err := h.newToken(u)
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusUnauthorized)
+		h.respondError(w, err)
 		return
 	}
 
 	// Respond with a valid token
 	resp := TokenResponse{Token: *token}
-	if err := json.NewEncoder(w).Encode(&resp); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
-	}
+	h.respond(w, resp, http.StatusOK)
 }
 
 // Create a new recipe
@@ -79,31 +76,27 @@ func (h Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	// Map request to struct
 	u := SignUpRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
-		http.Error(
-			w,
-			fmt.Sprintf(`{"error": "%s"}`, http.StatusText(http.StatusBadRequest)),
-			http.StatusBadRequest,
-		)
+		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
 	// Validate sign up request
 	v := validator.New()
 	if err := v.Struct(u); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
 	// Check if username is available
 	if _, err := h.db.User.GetByUsername(u.Username); err == nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "Username is taken"), http.StatusConflict)
+		h.respondError(w, APIError{Message: "Username is taken", StatusCode: http.StatusConflict})
 		return
 	}
 
 	// Create hash from password
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
@@ -116,23 +109,18 @@ func (h Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		Active:   true,
 	})
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "failed to create user"), http.StatusInternalServerError)
+		h.respondError(w, errors.New("failed to create user"))
 		return
 	}
 
 	// User created, generate a token
-	token, err := h.newToken(&database.User{
-		ID:       uID,
-		Username: u.Username,
-	})
+	token, err := h.newToken(&database.User{ID: uID, Username: u.Username})
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusUnauthorized)
+		h.respondError(w, err)
 		return
 	}
 
 	// Respond with a token
 	resp := TokenResponse{Token: *token}
-	if err := json.NewEncoder(w).Encode(&resp); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
-	}
+	h.respond(w, resp, http.StatusOK)
 }

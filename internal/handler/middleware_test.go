@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/georlav/recipeapi/internal/logger"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/georlav/recipeapi/internal/config"
 
@@ -63,13 +65,14 @@ func TestHandler_Authorization(t *testing.T) {
 		},
 	}
 
+	h := handler.NewHandler(nil, *cfg, logger.NewLogger(cfg.Logger))
+
 	for i := range testCases {
 		tc := testCases[i]
 
 		t.Run(`Sign in`, func(t *testing.T) {
 			t.Parallel()
 
-			h := handler.NewHandler(nil, *cfg, nil)
 			req := httptest.NewRequest(http.MethodPost, "/", nil)
 			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", tc.token))
 			rr := httptest.NewRecorder()

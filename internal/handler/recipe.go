@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -12,35 +11,32 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-func (h Handler) Recipe(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Recipe(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	id, ok := mux.Vars(r)["id"]
 	if !ok {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "recipe id is required."), http.StatusBadRequest)
+		h.respondError(w, APIError{Message: "recipe id is required.", StatusCode: http.StatusBadRequest})
 		return
 	}
 	nID, _ := strconv.Atoi(id)
 
 	recipe, err := h.db.Recipe.Get(uint64(nID))
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "unknown recipe."), http.StatusNotFound)
+		h.respondError(w, APIError{Message: "unknown recipe", StatusCode: http.StatusNotFound})
 		return
 	}
 
 	// Respond
-	resp := NewRecipeResponse(recipe)
-	if err := json.NewEncoder(w).Encode(&resp); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
-	}
+	h.respond(w, NewRecipeResponse(recipe), http.StatusOK)
 }
 
-func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	// Map request to struct
 	rr := RecipesRequest{}
 	if err := h.decoder.Decode(&rr, r.URL.Query()); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
@@ -53,32 +49,30 @@ func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 	// retrieve data from database
 	recipes, total, err := h.db.Recipe.Paginate(rr.Page, &filters)
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
+		h.respondError(w, err)
 		return
 	}
 
 	// Respond
 	resp := NewRecipesResponse("Recipe Puppy Clone", h.cfg.APP.Version, recipes, total)
-	if err := json.NewEncoder(w).Encode(&resp); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusInternalServerError)
-	}
+	h.respond(w, resp, http.StatusOK)
 }
 
 // Create a new recipe
-func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	// Map request to struct
 	rc := RecipeCreateRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&rc); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
 	// validate data in struct
 	v := validator.New()
 	if err := v.Struct(rc); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
@@ -98,7 +92,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		Thumbnail:   rc.Thumbnail,
 		Ingredients: ingredients,
 	}); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "failed to create recipe"), http.StatusInternalServerError)
+		h.respondError(w, APIError{Message: "failed to create recipe", StatusCode: http.StatusInternalServerError})
 		return
 	}
 

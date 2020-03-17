@@ -13,6 +13,7 @@ The exercise is based on [recipepuppy](http://www.recipepuppy.com/) free api. Al
 retrieved from there.
 
 ### Project is divided into nine steps, each step has its own branch.
+ * 00-CI
  * 01-Server
  * 02-Configuration
  * 03-Logging
@@ -21,8 +22,7 @@ retrieved from there.
  * 06-Database
  * 07-Handler-real-data
  * 08-Middleware
- * 09-CI
- * 10-Authentication
+ * 09-Authentication
 
 ### Prerequisites
  * Go
@@ -85,7 +85,7 @@ http://127.0.0.1:8080/api/user [GET]
 ```
 
 ### Postman
-For your convenience a postman collection/environment file is available at
+For your convenience a postman collection/environment files are available at
 ```
 api/Recipes.postman_collection.json
 api/Recipes.postman_environment.json

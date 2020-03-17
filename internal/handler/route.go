@@ -25,8 +25,5 @@ func Routes(h *Handler) *mux.Router {
 	user.Use(h.AuthorizationMiddleware)
 	user.HandleFunc("", h.User).Methods(http.MethodGet).Name("profile")
 
-	// health endpoint
-	r.HandleFunc("/health", nil).Methods("GET").Name("health")
-
 	return r
 }

@@ -1,6 +1,8 @@
 package handler
 
-import "github.com/georlav/recipeapi/internal/database"
+import (
+	"github.com/georlav/recipeapi/internal/database"
+)
 
 // RecipeResponse recipe response object
 type RecipesResponse struct {
@@ -88,3 +90,10 @@ type IngredientResponseItem struct {
 }
 
 type IngredientResponse []IngredientResponseItem
+
+// ErrorResponse object to map error response
+type ErrorResponse struct {
+	Message       string `json:"error"`
+	StatusCode    int    `json:"statusCode"`
+	StatusMessage string `json:"statusMessage"`
+}

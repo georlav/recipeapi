@@ -1,0 +1,50 @@
+name: Test
+on: [push]
+jobs:
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    services:
+
+      mongo:
+        image: mongo:3.6
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: toor
+
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3316:3306
+        env:
+          MYSQL_DATABASE: recipes_test
+          MYSQL_USER: user
+          MYSQL_PASSWORD: pass
+          MYSQL_ROOT_PASSWORD: pass
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+    
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Test
+      run: |
+        mysql -h 127.0.0.1 --port 3316 -u root -ppass -e 'CREATE DATABASE IF NOT EXISTS recipes_test;'
+        mysql -h 127.0.0.1 --port 3316 -u root -ppass recipes_test < api/recipes-schema.sql
+        cp config.json.dist config.json
+        go test ./... -v -race -mod=vendor -coverprofile=coverage.txt -covermode=atomic
+      
+    - name: Upload Coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.txt

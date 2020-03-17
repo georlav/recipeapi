@@ -1,0 +1,175 @@
+{
+	"info": {
+		"_postman_id": "24ee6b04-689c-4d7b-88cf-906536bc0db8",
+		"name": "Recipes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Sign in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Username\": \"{{username}}\",\n\t\"Password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/signin",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"signin"
+							]
+						},
+						"description": "create a new account"
+					},
+					"response": []
+				},
+				{
+					"name": "Sign up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Email\": \"{{username}}@test.com\",\n\t\"FullName\": \"full name\",\n\t\"Username\": \"{{username}}\",\n\t\"Password\": \"{{password}}\",\n\t\"RepeatPassword\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/signup",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"signup"
+							]
+						},
+						"description": "create a new account"
+					},
+					"response": []
+				},
+				{
+					"name": "Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "create a new account"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "recipes",
+			"item": [
+				{
+					"name": "recipe",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/recipes/1",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"recipes",
+								"1"
+							]
+						},
+						"description": "recipe listing"
+					},
+					"response": []
+				},
+				{
+					"name": "recipes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{Token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/recipes",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"recipes"
+							]
+						},
+						"description": "recipe listing"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

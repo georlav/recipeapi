@@ -13,6 +13,7 @@ type Database struct {
 	Handle     *sql.DB
 	Recipe     *RecipeTable
 	Ingredient *IngredientTable
+	User       *UserTable
 }
 
 func New(c config.Database) (*Database, error) {
@@ -39,5 +40,6 @@ func New(c config.Database) (*Database, error) {
 		Handle:     db,
 		Recipe:     NewRecipeTable(db),
 		Ingredient: NewIngredientTable(db),
+		User:       NewUserTable(db),
 	}, nil
 }

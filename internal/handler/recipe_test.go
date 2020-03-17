@@ -183,6 +183,11 @@ func TestHandler_Create(t *testing.T) {
 			http.StatusBadRequest,
 			`Field validation for 'Ingredients' failed on the 'required' tag"`,
 		},
+		{
+			`invalid request`,
+			http.StatusBadRequest,
+			`jghg`,
+		},
 	}
 
 	cfg, err := config.Load("testdata/config.json")

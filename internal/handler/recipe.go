@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/georlav/recipeapi/internal/database"
-
 	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -37,7 +36,11 @@ func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 	// Map request to struct
 	rr := RecipesRequest{}
 	if err := h.decoder.Decode(&rr, r.URL.Query()); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		http.Error(
+			w,
+			fmt.Sprintf(`{"error": "%s"}`, http.StatusText(http.StatusBadRequest)),
+			http.StatusBadRequest,
+		)
 		return
 	}
 
@@ -66,7 +69,11 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	// Map request to struct
 	rc := RecipeCreateRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&rc); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		http.Error(
+			w,
+			fmt.Sprintf(`{"error": "%s"}`, http.StatusText(http.StatusBadRequest)),
+			http.StatusBadRequest,
+		)
 		return
 	}
 

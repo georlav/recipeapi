@@ -52,7 +52,7 @@ func (h *Handler) newToken(u *database.User) (*string, error) {
 func (h *Handler) getToken(r *http.Request) (*Token, error) {
 	token, ok := r.Context().Value(CtxKeyToken).(Token)
 	if !ok {
-		return nil, errors.New("token is missing")
+		return nil, errors.New("token not present in header")
 	}
 
 	return &token, nil

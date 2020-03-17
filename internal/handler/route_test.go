@@ -5,12 +5,11 @@ import (
 
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/handler"
-	"github.com/georlav/recipeapi/internal/logger"
 )
 
 func TestRoutes(t *testing.T) {
 	// Init handlers
-	h := handler.NewHandler(nil, config.Config{}, &logger.Logger{})
+	h := handler.NewHandler(nil, config.Config{}, nil)
 
 	// Init routes
 	r := handler.Routes(h)

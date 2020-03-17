@@ -24,8 +24,8 @@ func TestHandler_Recipe(t *testing.T) {
 	}{
 		{1, "Ginger Champagne", http.StatusOK},
 		{2, "Potato and Cheese Frittata", http.StatusOK},
-		{0, "", http.StatusBadRequest},
 		{9999, "souvlaki", http.StatusNotFound},
+		{0, "", http.StatusBadRequest},
 	}
 
 	cfg, err := config.Load("testdata/config.json")
@@ -38,7 +38,7 @@ func TestHandler_Recipe(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, config.Config{}, &logger.Logger{})
+	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]
@@ -61,7 +61,12 @@ func TestHandler_Recipe(t *testing.T) {
 			rh.ServeHTTP(rr, muxReq)
 
 			if rr.Code != tc.expectedCode {
-				t.Fatalf("Wrong status code got %d expected %d, %s", http.StatusOK, rr.Code, rr.Body.String())
+				t.Fatalf(
+					"Wrong status code expected %d got %d, Body: (%s)",
+					tc.expectedCode,
+					rr.Code,
+					rr.Body.String(),
+				)
 			}
 
 			if http.StatusOK == rr.Code {
@@ -117,7 +122,7 @@ func TestHandler_Recipes(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, config.Config{}, &logger.Logger{})
+	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]
@@ -200,7 +205,7 @@ func TestHandler_Create(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, config.Config{}, &logger.Logger{})
+	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]

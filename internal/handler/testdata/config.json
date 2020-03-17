@@ -21,7 +21,7 @@
   },
   "logger": {
     "logLevel": 6,
-    "enableStdout": true,
+    "enableStdout": false,
     "ReportCaller": true
   }
 }

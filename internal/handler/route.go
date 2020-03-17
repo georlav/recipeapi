@@ -19,13 +19,11 @@ func Routes(h *Handler) *mux.Router {
 	articleRoutes.HandleFunc("", h.Create).Methods(http.MethodPost).Name("create")
 
 	// user routes
-	user := r.PathPrefix("/api/user").Subrouter()
-	user.HandleFunc("/signin", h.SignIn).Methods(http.MethodPost).Name("signin")
-	user.HandleFunc("/signup", h.SignUp).Methods(http.MethodPost).Name("signup")
-
-	userProtected := user.Path("/").Subrouter()
-	userProtected.Use(h.AuthorizationMiddleware)
-	userProtected.HandleFunc("", h.User).Methods(http.MethodGet).Name("profile")
+	r.HandleFunc("/api/user/signin", h.SignIn).Methods(http.MethodPost).Name("signin")
+	r.HandleFunc("/api/user/signup", h.SignUp).Methods(http.MethodPost).Name("signup")
+	user := r.Path("/api/user").Subrouter()
+	user.Use(h.AuthorizationMiddleware)
+	user.HandleFunc("", h.User).Methods(http.MethodGet).Name("profile")
 
 	// health endpoint
 	r.HandleFunc("/health", nil).Methods("GET").Name("health")

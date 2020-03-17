@@ -39,7 +39,7 @@ jobs:
     - name: Test
       run: |
         mysql -h 127.0.0.1 --port 3316 -u root -ppass -e 'CREATE DATABASE IF NOT EXISTS recipes_test;'
-        mysql -h 127.0.0.1 --port 3316 -u root -ppass recipes_test < recipes-schema.sql
+        mysql -h 127.0.0.1 --port 3316 -u root -ppass recipes_test < api/recipes-schema.sql
         cp config.json.dist config.json
         go test ./... -v -race -p=1 -mod=vendor -coverprofile=coverage.txt -covermode=atomic
       

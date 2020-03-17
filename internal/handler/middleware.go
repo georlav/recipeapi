@@ -16,14 +16,14 @@ func (h Handler) HeadersMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Enable CORS
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET")
+		w.Header().Set("Access-Control-Allow-Methods", http.MethodGet)
 
 		next.ServeHTTP(w, r)
 	})
 }
 
 // Authorization middleware assign to all routes that require users to be signed in
-func (h Handler) Authorization(next http.Handler) http.Handler {
+func (h Handler) AuthorizationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		auth := r.Header.Get("Authorization")
 		tokenString := strings.TrimPrefix(auth, "Bearer ")
@@ -36,12 +36,8 @@ func (h Handler) Authorization(next http.Handler) http.Handler {
 
 			return []byte(h.cfg.Token.Secret), nil
 		})
-		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"error": "invalid token, %s"}`, err), http.StatusBadRequest)
-			return
-		}
-		if !token.Valid {
-			http.Error(w, fmt.Sprintf(`{"error": "invalid token"}`), http.StatusBadRequest)
+		if err != nil || !token.Valid {
+			http.Error(w, fmt.Sprintf(`{"error": "invalid token"}`), http.StatusUnauthorized)
 			return
 		}
 

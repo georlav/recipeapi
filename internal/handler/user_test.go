@@ -1,12 +1,12 @@
 package handler_test
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/georlav/recipeapi/internal/config"
@@ -80,29 +80,28 @@ func TestHandler_User(t *testing.T) {
 
 func TestHandler_SignIn(t *testing.T) {
 	testData := []struct {
-		input        handler.SignInRequest
+		input        string
 		expectedCode int
 	}{
 		{
-			handler.SignInRequest{
-				Username: "username1",
-				Password: "password",
-			},
+			`{"username": "username1", "password": "password"}`,
 			http.StatusOK,
 		},
 		{
-			handler.SignInRequest{
-				Username: "username1",
-				Password: "pass",
-			},
+			`{"username": "username1", "password": "pass"}`,
 			http.StatusUnauthorized,
 		},
 		{
-			handler.SignInRequest{
-				Username: "username",
-				Password: "password",
-			},
+			`{"username": "username", "password": "password"}`,
 			http.StatusUnauthorized,
+		},
+		{
+			`{"username": "", "password": ""}`,
+			http.StatusBadRequest,
+		},
+		{
+			`invalid input`,
+			http.StatusBadRequest,
 		},
 	}
 
@@ -121,17 +120,10 @@ func TestHandler_SignIn(t *testing.T) {
 	for i := range testData {
 		tc := testData[i]
 
-		t.Run(fmt.Sprintf(`Sign in as %s`, tc.input.Username), func(t *testing.T) {
+		t.Run(`Sign in`, func(t *testing.T) {
 			t.Parallel()
 
-			b, err := json.Marshal(tc.input)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			req := httptest.NewRequest(http.MethodPost, "/user/signin", bytes.NewReader(b))
-
-			// initialize response recorder to monitor handler response data
+			req := httptest.NewRequest(http.MethodPost, "/user/signin", strings.NewReader(tc.input))
 			rr := httptest.NewRecorder()
 			h := http.HandlerFunc(h.SignIn)
 			h.ServeHTTP(rr, req)
@@ -156,27 +148,30 @@ func TestHandler_SignIn(t *testing.T) {
 
 func TestHandler_SignUp(t *testing.T) {
 	testData := []struct {
-		input        handler.SignUpRequest
+		desc         string
+		input        string
 		expectedCode int
 	}{
 		{
-			handler.SignUpRequest{
-				Email:          "test+1@test.com",
-				FullName:       "full name",
-				Username:       "username2",
-				Password:       "password2",
-				RepeatPassword: "password2",
-			},
+			"Should create an account",
+			`{"username":"username2","password":"password","repeatPassword":"password","fullName":"test user","email":"email@email.com"}`,
 			http.StatusOK,
 		},
 		{
-			handler.SignUpRequest{
-				Email:          "test+2@test.com",
-				FullName:       "full name",
-				Username:       "username3",
-				Password:       "password3",
-				RepeatPassword: "password4",
-			},
+			"Should fail because passwords doesnt match",
+			`{"username": "username3","password": "password3","repeatPassword": "password4",
+"fullName": "full name","email": "test+2@test.com"}`,
+			http.StatusBadRequest,
+		},
+		{
+			"Should fail due to missing username",
+			`{"password": "password3","repeatPassword": "password4",
+"fullName": "full name","email": "test+2@test.com"}`,
+			http.StatusBadRequest,
+		},
+		{
+			"Should fail because request payload is not a valid json",
+			`invalid request`,
 			http.StatusBadRequest,
 		},
 	}
@@ -196,16 +191,10 @@ func TestHandler_SignUp(t *testing.T) {
 	for i := range testData {
 		tc := testData[i]
 
-		t.Run(fmt.Sprintf(`Sign in as %s`, tc.input.Username), func(t *testing.T) {
+		t.Run(tc.desc, func(t *testing.T) {
 			t.Parallel()
 
-			b, err := json.Marshal(tc.input)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			req := httptest.NewRequest(http.MethodPost, "/user/signup", bytes.NewReader(b))
-
+			req := httptest.NewRequest(http.MethodPost, "/user/signup", strings.NewReader(tc.input))
 			rr := httptest.NewRecorder()
 			h := http.HandlerFunc(h.SignUp)
 			h.ServeHTTP(rr, req)

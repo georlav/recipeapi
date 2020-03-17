@@ -32,7 +32,11 @@ func (h Handler) User(w http.ResponseWriter, r *http.Request) {
 func (h Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	si := SignInRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&si); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, "invalid request data"), http.StatusBadRequest)
+		http.Error(
+			w,
+			fmt.Sprintf(`{"error": "%s"}`, http.StatusText(http.StatusBadRequest)),
+			http.StatusBadRequest,
+		)
 		return
 	}
 
@@ -75,7 +79,11 @@ func (h Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	// Map request to struct
 	u := SignUpRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err), http.StatusBadRequest)
+		http.Error(
+			w,
+			fmt.Sprintf(`{"error": "%s"}`, http.StatusText(http.StatusBadRequest)),
+			http.StatusBadRequest,
+		)
 		return
 	}
 
@@ -112,7 +120,7 @@ func (h Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// User account created, create a token
+	// User created, generate a token
 	token, err := h.newToken(&database.User{
 		ID:       uID,
 		Username: u.Username,

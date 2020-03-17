@@ -13,7 +13,7 @@ func Routes(h *Handler) *mux.Router {
 
 	// recipe routes
 	articleRoutes := r.PathPrefix("/api/recipes").Subrouter()
-	articleRoutes.Use(h.Authorization)
+	articleRoutes.Use(h.AuthorizationMiddleware)
 	articleRoutes.HandleFunc("/{id:[0-9]+}", h.Recipe).Methods(http.MethodGet).Name("recipe")
 	articleRoutes.HandleFunc("", h.Recipes).Methods(http.MethodGet).Name("recipes")
 	articleRoutes.HandleFunc("", h.Create).Methods(http.MethodPost).Name("create")
@@ -24,6 +24,7 @@ func Routes(h *Handler) *mux.Router {
 	user.HandleFunc("/signup", h.SignUp).Methods(http.MethodPost).Name("signup")
 
 	userProtected := user.Path("/").Subrouter()
+	userProtected.Use(h.AuthorizationMiddleware)
 	userProtected.HandleFunc("", h.User).Methods(http.MethodGet).Name("profile")
 
 	// health endpoint

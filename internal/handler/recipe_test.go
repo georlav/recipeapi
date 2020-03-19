@@ -39,7 +39,7 @@ func TestHandler_Recipe(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
+	h := handler.NewHandler(db, cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]
@@ -122,7 +122,7 @@ func TestHandler_Recipes(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
+	h := handler.NewHandler(db, cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]
@@ -205,7 +205,7 @@ func TestHandler_Create(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
+	h := handler.NewHandler(db, cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]

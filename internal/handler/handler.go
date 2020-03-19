@@ -20,11 +20,11 @@ const CtxKeyToken contextKey = "token"
 type Handler struct {
 	db      *database.Database
 	decoder *schema.Decoder
-	cfg     config.Config
+	cfg     *config.Config
 	log     *logger.Logger
 }
 
-func NewHandler(db *database.Database, c config.Config, l *logger.Logger) *Handler {
+func NewHandler(db *database.Database, c *config.Config, l *logger.Logger) *Handler {
 	return &Handler{
 		db:      db,
 		decoder: schema.NewDecoder(),

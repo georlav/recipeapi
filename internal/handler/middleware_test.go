@@ -65,7 +65,7 @@ func TestHandler_Authorization(t *testing.T) {
 		},
 	}
 
-	h := handler.NewHandler(nil, *cfg, logger.NewLogger(cfg.Logger))
+	h := handler.NewHandler(nil, cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testCases {
 		tc := testCases[i]
@@ -90,13 +90,13 @@ func TestHandler_Authorization(t *testing.T) {
 	}
 }
 
-func TestHandler_HeadersMiddleware(t *testing.T) {
-	h := handler.NewHandler(nil, config.Config{}, nil)
+func TestHandler_ContentTypeMiddleware(t *testing.T) {
+	h := handler.NewHandler(nil, &config.Config{}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	rr := httptest.NewRecorder()
 
-	h.HeadersMiddleware(
+	h.ContentTypeMiddleware(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 		}),
@@ -105,10 +105,24 @@ func TestHandler_HeadersMiddleware(t *testing.T) {
 	if rr.Header().Get("Content-Type") != "application/json; charset=utf-8" {
 		t.Fatal("Invalid content type")
 	}
+}
+
+func TestHandler_CorsMiddleware(t *testing.T) {
+	h := handler.NewHandler(nil, &config.Config{}, nil)
+
+	req := httptest.NewRequest(http.MethodPost, "/", nil)
+	rr := httptest.NewRecorder()
+
+	h.CorsMiddleware(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNoContent)
+		}),
+	).ServeHTTP(rr, req)
+
 	if rr.Header().Get("Access-Control-Allow-Origin") != "*" {
-		t.Fatal("Invalid content type")
+		t.Fatal("Invalid origin")
 	}
-	if rr.Header().Get("Access-Control-Allow-Methods") != http.MethodGet {
+	if rr.Header().Get("Access-Control-Allow-Methods") != "GET, POST, PUT, DELETE, OPTIONS" {
 		t.Fatal("Invalid content type")
 	}
 }

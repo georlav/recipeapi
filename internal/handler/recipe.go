@@ -6,18 +6,17 @@ import (
 	"strconv"
 
 	"github.com/georlav/recipeapi/internal/database"
-
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
 	"gopkg.in/go-playground/validator.v9"
 )
 
-func (h Handler) Recipe(w http.ResponseWriter, r *http.Request) {
-	id, ok := mux.Vars(r)["id"]
-	if !ok {
+func (h *Handler) Recipe(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	nID, err := strconv.Atoi(id)
+	if err != nil || id == "" {
 		h.respondError(w, APIError{Message: "recipe id is required.", StatusCode: http.StatusBadRequest})
 		return
 	}
-	nID, _ := strconv.Atoi(id)
 
 	recipe, err := h.db.Recipe.Get(uint64(nID))
 	if err != nil {

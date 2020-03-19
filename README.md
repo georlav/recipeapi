@@ -33,6 +33,12 @@ Set up required databases. At each execution recreates database and re imports d
 ```bash
 make db
 ```
+
+### Starting database container
+```bash
+docker-compose up -d
+```
+
 Set up/reset only dev-db
 ```bash
 make db-dev
@@ -40,11 +46,6 @@ make db-dev
 Set up/reset only test-db
 ```bash
 make db-test
-```
-
-### Starting database container
-```bash
-docker-compose up -d
 ```
 
 ### Configuration
@@ -76,16 +77,46 @@ make lint-insecure
 ```
 
 ### Usage examples
+
+Get recipe
 ```
 http://127.0.0.1:8080/api/recipe/1 [GET]
+```
+
+Get Recipes
+```
 http://127.0.0.1:8080/api/recipes?ingredient=onions&ingredient=garlic&term=omelet&page=1 [GET]
+```
+
+User Sign up
+```
 http://127.0.0.1:8080/api/user/signup [POST]
-http://127.0.0.1:8080/api/user/signup [POST]
+
+{
+    "email":"email@email.com",
+    "username":"username2",
+    "password":"password",
+    "repeatPassword":"password",
+    "fullName":"test user"
+}
+```
+
+User Sign in
+```
+http://127.0.0.1:8080/api/user/signin [POST][body]
+{
+    "username": "username1",
+    "password": "password"
+}
+```
+
+User Profile 
+```
 http://127.0.0.1:8080/api/user [GET]
 ```
 
 ### Postman
-For your convenience a postman collection/environment files are available at
+For your convenience Postman collection/environment files are available at
 ```
 api/Recipes.postman_collection.json
 api/Recipes.postman_environment.json

@@ -15,6 +15,22 @@ import (
 	"github.com/georlav/recipeapi/internal/logger"
 )
 
+// @title Recipe API
+// @version 1.0
+// @description Simple api that serves recipes for puppies. This project is a step by step guide on how to create a
+// @description simple api using Go programming language. The purpose of the project is to demonstrate to new comers
+// @description the language basic features and concepts.
+// @termsOfService http://swagger.io/terms/
+
+// @license.name MIT License
+// @license.url https://raw.githubusercontent.com/georlav/recipeapi/master/LICENSE
+
+// @host localhost:8080
+// @BasePath /api
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	// Load configuration from file
 	cfg, err := config.Load("config.json")

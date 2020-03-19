@@ -5,18 +5,32 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi"
+
 	"github.com/georlav/recipeapi/internal/database"
-	"github.com/gorilla/mux"
 	"gopkg.in/go-playground/validator.v9"
 )
 
+// Recipe godoc
+// @Summary Get a recipe
+// @Description Get a recipe by ID
+// @ID get-recipe-by-int
+// @Accept  application/x-www-form-urlencoded
+// @Produce  json
+// @Param id path int true "Recipe ID"
+// @Success 200 {object} handler.RecipeResponseItem
+// @Failure 400 {object} handler.ErrorResponse
+// @Failure 404 {object} handler.ErrorResponse
+// @Failure 500 {object} handler.ErrorResponse
+// @Security ApiKeyAuth
+// @Router /recipes/{id} [get]
 func (h Handler) Recipe(w http.ResponseWriter, r *http.Request) {
-	id, ok := mux.Vars(r)["id"]
-	if !ok {
+	id := chi.URLParam(r, "id")
+	nID, err := strconv.Atoi(id)
+	if err != nil || id == "" {
 		h.respondError(w, APIError{Message: "recipe id is required.", StatusCode: http.StatusBadRequest})
 		return
 	}
-	nID, _ := strconv.Atoi(id)
 
 	recipe, err := h.db.Recipe.Get(uint64(nID))
 	if err != nil {
@@ -28,6 +42,18 @@ func (h Handler) Recipe(w http.ResponseWriter, r *http.Request) {
 	h.respond(w, NewRecipeResponse(recipe), http.StatusOK)
 }
 
+// Recipes godoc
+// @Summary Get recipes
+// @Description Get a list of recipes
+// @ID get-recipes
+// @Accept  application/x-www-form-urlencoded
+// @Produce  json
+// @Success 200 {object} handler.RecipesResponse
+// @Failure 400 {object} handler.ErrorResponse
+// @Failure 404 {object} handler.ErrorResponse
+// @Failure 500 {object} handler.ErrorResponse
+// @Security ApiKeyAuth
+// @Router /recipes [get]
 func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 	// Map request to struct
 	rr := RecipesRequest{}

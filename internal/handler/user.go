@@ -10,6 +10,18 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
+// User godoc
+// @Summary user profile
+// @Description Get user profile info
+// @ID user-profile
+// @Accept  application/x-www-form-urlencoded
+// @Produce  json
+// @Success 200 {object} handler.UserProfileResponse
+// @Failure 400 {object} handler.ErrorResponse
+// @Failure 404 {object} handler.ErrorResponse
+// @Failure 500 {object} handler.ErrorResponse
+// @Security ApiKeyAuth
+// @Router /user [get]
 func (h Handler) User(w http.ResponseWriter, r *http.Request) {
 	token, err := h.getToken(r)
 	if err != nil {
@@ -26,6 +38,18 @@ func (h Handler) User(w http.ResponseWriter, r *http.Request) {
 	h.respond(w, NewUserProfileResponse(*user), http.StatusOK)
 }
 
+// SignIn godoc
+// @Summary user sign in
+// @Description user sign in
+// @ID user-sign-in
+// @Accept  json
+// @Produce  json
+// @Param credentials body handler.SignInRequest false "credentials payload"
+// @Success 200 {object} handler.TokenResponse
+// @Failure 400 {object} handler.ErrorResponse
+// @Failure 404 {object} handler.ErrorResponse
+// @Failure 500 {object} handler.ErrorResponse
+// @Router /user/signin [post]
 func (h Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	si := SignInRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&si); err != nil {
@@ -71,7 +95,18 @@ func (h Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	h.respond(w, resp, http.StatusOK)
 }
 
-// Create a new recipe
+// SignUp godoc
+// @Summary user sign up
+// @Description user sign up
+// @ID user-sign-up
+// @Accept  json
+// @Produce  json
+// @Param body body handler.SignUpRequest true "sign up payload"
+// @Success 200 {object} handler.TokenResponse
+// @Failure 400 {object} handler.ErrorResponse
+// @Failure 404 {object} handler.ErrorResponse
+// @Failure 500 {object} handler.ErrorResponse
+// @Router /user/signup [post]
 func (h Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	// Map request to struct
 	u := SignUpRequest{}

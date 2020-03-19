@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,7 +14,7 @@ import (
 	"github.com/georlav/recipeapi/internal/database"
 	"github.com/georlav/recipeapi/internal/handler"
 	"github.com/georlav/recipeapi/internal/logger"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
 )
 
 func TestHandler_Recipe(t *testing.T) {
@@ -47,18 +48,17 @@ func TestHandler_Recipe(t *testing.T) {
 			t.Parallel()
 
 			req := httptest.NewRequest("GET", fmt.Sprintf("/recipes/%d", tc.input), nil)
-			muxReq := mux.SetURLVars(req, map[string]string{
-				"id": fmt.Sprintf("%d", tc.input),
-			})
 
-			if tc.input == 0 {
-				muxReq = mux.SetURLVars(req, map[string]string{})
+			// Inject uri param
+			ctx := chi.NewRouteContext()
+			if tc.input != 0 {
+				ctx.URLParams.Add("id", fmt.Sprintf(`%d`, tc.input))
 			}
 
 			// initialize response recorder to monitor handler response data
 			rr := httptest.NewRecorder()
 			rh := http.HandlerFunc(h.Recipe)
-			rh.ServeHTTP(rr, muxReq)
+			rh.ServeHTTP(rr, req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, ctx)))
 
 			if rr.Code != tc.expectedCode {
 				t.Fatalf(

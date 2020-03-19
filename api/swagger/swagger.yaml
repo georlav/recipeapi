@@ -1,0 +1,288 @@
+basePath: /api
+definitions:
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+      statusCode:
+        type: integer
+      statusMessage:
+        type: string
+    type: object
+  handler.IngredientResponse:
+    items:
+      $ref: '#/definitions/handler.IngredientResponseItem'
+    type: array
+  handler.IngredientResponseItem:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  handler.Metadata:
+    properties:
+      total:
+        type: integer
+    type: object
+  handler.RecipeResponseItem:
+    properties:
+      createdAt:
+        type: string
+      href:
+        type: string
+      id:
+        type: integer
+      ingredients:
+        $ref: '#/definitions/handler.IngredientResponse'
+        type: object
+      thumbnail:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  handler.RecipeResponseItems:
+    items:
+      $ref: '#/definitions/handler.RecipeResponseItem'
+    type: array
+  handler.RecipesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/handler.RecipeResponseItems'
+        type: object
+      href:
+        type: string
+      metadata:
+        $ref: '#/definitions/handler.Metadata'
+        type: object
+      title:
+        type: string
+      version:
+        type: string
+    type: object
+  handler.SignInRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  handler.SignUpRequest:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      password:
+        type: string
+      repeatPassword:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  handler.TokenResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  handler.UserProfileResponse:
+    properties:
+      active:
+        type: boolean
+      createdAt:
+        type: string
+      email:
+        type: string
+      fullName:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: |-
+    Simple api that serves recipes for puppies. This project is a step by step guide on how to create a
+    simple api using Go programming language. The purpose of the project is to demonstrate to new comers
+    the language basic features and concepts.
+  license:
+    name: MIT License
+    url: https://raw.githubusercontent.com/georlav/recipeapi/master/LICENSE
+  termsOfService: http://swagger.io/terms/
+  title: Recipe API
+  version: "1.0"
+paths:
+  /recipes:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Get a list of recipes
+      operationId: get-recipes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.RecipesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get recipes
+  /recipes/{id}:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Get a recipe by ID
+      operationId: get-recipe-by-int
+      parameters:
+      - description: Recipe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.RecipeResponseItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a recipe
+  /user:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Get user profile info
+      operationId: user-profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UserProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: user profile
+  /user/signin:
+    post:
+      consumes:
+      - application/json
+      description: user sign in
+      operationId: user-sign-in
+      parameters:
+      - description: credentials payload
+        in: body
+        name: credentials
+        schema:
+          $ref: '#/definitions/handler.SignInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: user sign in
+  /user/signup:
+    post:
+      consumes:
+      - application/json
+      description: user sign up
+      operationId: user-sign-up
+      parameters:
+      - description: sign up payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.SignUpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: user sign up
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

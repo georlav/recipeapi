@@ -54,6 +54,7 @@ func (rt *RecipeTable) Get(id uint64) (*Recipe, error) {
 // Paginate get paginated recipes
 func (rt *RecipeTable) Paginate(page uint64, filters *RecipeFilters) (Recipes, int64, error) {
 	var args []interface{}
+	// nolint:gosec
 	query := fmt.Sprintf(`SELECT DISTINCT %s FROM %s 
 JOIN ingredient i on r.id = i.recipe_id 
 WHERE 1=1`, recipeColumns, rt.name)

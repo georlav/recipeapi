@@ -7,12 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/georlav/recipeapi/internal/logger"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/georlav/recipeapi/internal/config"
-
 	"github.com/georlav/recipeapi/internal/handler"
+	"github.com/georlav/recipeapi/internal/logger"
 )
 
 func TestHandler_Authorization(t *testing.T) {
@@ -65,7 +63,7 @@ func TestHandler_Authorization(t *testing.T) {
 		},
 	}
 
-	h := handler.NewHandler(nil, *cfg, logger.NewLogger(cfg.Logger))
+	h := handler.NewHandler(nil, cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testCases {
 		tc := testCases[i]
@@ -91,7 +89,7 @@ func TestHandler_Authorization(t *testing.T) {
 }
 
 func TestHandler_ContentTypeMiddleware(t *testing.T) {
-	h := handler.NewHandler(nil, config.Config{}, nil)
+	h := handler.NewHandler(nil, &config.Config{}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	rr := httptest.NewRecorder()
@@ -108,7 +106,7 @@ func TestHandler_ContentTypeMiddleware(t *testing.T) {
 }
 
 func TestHandler_CorsMiddleware(t *testing.T) {
-	h := handler.NewHandler(nil, config.Config{}, nil)
+	h := handler.NewHandler(nil, &config.Config{}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "/", nil)
 	rr := httptest.NewRecorder()

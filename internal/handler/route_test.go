@@ -12,7 +12,7 @@ import (
 
 func TestRoutes(t *testing.T) {
 	// Init handlers
-	h := handler.NewHandler(nil, config.Config{}, nil)
+	h := handler.NewHandler(nil, &config.Config{}, nil)
 
 	// Init routes
 	r := handler.Routes(h)

@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
-
 	"github.com/georlav/recipeapi/internal/database"
+	"github.com/go-chi/chi"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -24,7 +23,7 @@ import (
 // @Failure 500 {object} handler.ErrorResponse
 // @Security ApiKeyAuth
 // @Router /recipes/{id} [get]
-func (h Handler) Recipe(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Recipe(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	nID, err := strconv.Atoi(id)
 	if err != nil || id == "" {

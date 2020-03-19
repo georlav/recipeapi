@@ -48,7 +48,7 @@ func main() {
 	}
 
 	// Initialize handlers
-	h := handler.NewHandler(db, *cfg, log)
+	h := handler.NewHandler(db, cfg, log)
 
 	// Initialize API routes
 	r := handler.Routes(h)

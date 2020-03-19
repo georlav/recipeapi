@@ -52,7 +52,7 @@ func TestHandler_User(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
+	h := handler.NewHandler(db, cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]
@@ -115,7 +115,7 @@ func TestHandler_SignIn(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
+	h := handler.NewHandler(db, cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]
@@ -186,7 +186,7 @@ func TestHandler_SignUp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	h := handler.NewHandler(db, *cfg, logger.NewLogger(cfg.Logger))
+	h := handler.NewHandler(db, cfg, logger.NewLogger(cfg.Logger))
 
 	for i := range testData {
 		tc := testData[i]

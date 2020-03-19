@@ -1,11 +1,11 @@
 run:
 	GORACE="halt_on_error=1" go run -race cmd/api/main.go
+test:
+	go test ./... -v -race -cover -count=1
 build:
 	go build -ldflags "-s -w" cmd/api/main.go
-test:
-	go test ./... -v -race -cover -p=1 -count=1
-import:
-	go run cmd/import/main.go
+make swag:
+	swag init -g cmd/api/main.go -o api/swagger
 lint:
 	docker run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.23.6 golangci-lint run
 lint-insecure:

@@ -18,12 +18,12 @@ func TestRoutes(t *testing.T) {
 	r := handler.Routes(h)
 
 	expectedRoutes := map[string]struct{}{
-		"/api/*/recipes/*/":            struct{}{},
-		"/api/*/recipes/*/{id:[0-9]+}": struct{}{},
-		"/api/*/user/*/":               struct{}{},
-		"/api/*/user/*/signin":         struct{}{},
-		"/api/*/user/*/signup":         struct{}{},
-		"/swagger/*":                   struct{}{},
+		"/api/*/recipes/*/":            {},
+		"/api/*/recipes/*/{id:[0-9]+}": {},
+		"/api/*/user/*/":               {},
+		"/api/*/user/*/signin":         {},
+		"/api/*/user/*/signup":         {},
+		"/swagger/*":                   {},
 	}
 
 	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {

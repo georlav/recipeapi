@@ -34,7 +34,7 @@ func NewRecipeTable(db *sql.DB) *RecipeTable {
 // Get a recipe by id
 func (rt *RecipeTable) Get(id uint64) (*Recipe, error) {
 	// nolint:gosec
-	query := fmt.Sprintf(`SELECT %s FROM recipe r WHERE id = ?`, recipeColumns)
+	query := fmt.Sprintf(`SELECT %s FROM %s WHERE id = ?`, recipeColumns, rt.name)
 
 	var rcp Recipe
 	if err := rt.db.QueryRow(query, id).Scan(
@@ -54,10 +54,10 @@ func (rt *RecipeTable) Get(id uint64) (*Recipe, error) {
 // Paginate get paginated recipes
 func (rt *RecipeTable) Paginate(page uint64, filters *RecipeFilters) (Recipes, int64, error) {
 	var args []interface{}
-	query := fmt.Sprintf(`SELECT DISTINCT %s 
-FROM recipe r 
+	// nolint:gosec
+	query := fmt.Sprintf(`SELECT DISTINCT %s FROM %s 
 JOIN ingredient i on r.id = i.recipe_id 
-WHERE 1=1`, recipeColumns)
+WHERE 1=1`, recipeColumns, rt.name)
 
 	if filters != nil && filters.Term != "" {
 		query += " AND r.title like ?"

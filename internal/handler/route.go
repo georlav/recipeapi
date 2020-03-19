@@ -1,21 +1,26 @@
 package handler
 
 import (
-	"github.com/gorilla/mux"
+	"time"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 // Routes initializes api routes and shared middleware
-func Routes(h *Handler) *mux.Router {
-	r := mux.NewRouter()
+func Routes(h *Handler) *chi.Mux {
+	r := chi.NewRouter()
 	r.Use(
-	// Add here your global middleware
+		middleware.RequestID,
+		middleware.Timeout(60*time.Second),
 	)
 
-	// Product API handlers
-	api := r.PathPrefix("/api/recipes").Subrouter()
-	api.HandleFunc("/{id:[0-9]+}", h.Recipe).Methods("GET").Name("recipe")
-	api.HandleFunc("", h.Recipes).Methods("GET").Name("recipes")
-	api.HandleFunc("", h.Recipes).Methods("POST").Name("create")
+	// Recipe routes
+	r.Route("/api/recipes", func(r chi.Router) {
+		r.Get("/{id:[0-9]+}", h.Recipe)
+		r.Get("/", h.Recipes)
+		r.Post("/", nil)
+	})
 
 	return r
 }

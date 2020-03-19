@@ -1,29 +1,48 @@
 package handler
 
 import (
-	"net/http"
+	"time"
 
-	"github.com/gorilla/mux"
+	_ "github.com/georlav/recipeapi/api/swagger"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // Routes initializes api routes and shared middleware
-func Routes(h *Handler) *mux.Router {
-	r := mux.NewRouter()
-	r.Use(h.HeadersMiddleware)
+func Routes(h *Handler) *chi.Mux {
+	r := chi.NewRouter()
+	r.Use(
+		middleware.RequestID,
+		middleware.Timeout(60*time.Second),
+		h.CorsMiddleware,
+		h.ContentTypeMiddleware,
+	)
 
-	// recipe routes
-	articleRoutes := r.PathPrefix("/api/recipes").Subrouter()
-	articleRoutes.Use(h.AuthorizationMiddleware)
-	articleRoutes.HandleFunc("/{id:[0-9]+}", h.Recipe).Methods(http.MethodGet).Name("recipe")
-	articleRoutes.HandleFunc("", h.Recipes).Methods(http.MethodGet).Name("recipes")
-	articleRoutes.HandleFunc("", h.Create).Methods(http.MethodPost).Name("create")
+	// Recipe routes
+	r.Route("/recipes", func(r chi.Router) {
+		r.Use(h.AuthorizationMiddleware)
+		r.Get("/{id:[0-9]+}", h.Recipe)
+		r.Get("/", h.Recipes)
+		r.Post("/", h.Create)
+	})
 
-	// user routes
-	r.HandleFunc("/api/user/signin", h.SignIn).Methods(http.MethodPost).Name("signin")
-	r.HandleFunc("/api/user/signup", h.SignUp).Methods(http.MethodPost).Name("signup")
-	user := r.Path("/api/user").Subrouter()
-	user.Use(h.AuthorizationMiddleware)
-	user.HandleFunc("", h.User).Methods(http.MethodGet).Name("profile")
+	// User routes
+	r.Route("/user", func(r chi.Router) {
+		// Public
+		r.Post("/signin", h.SignIn)
+		r.Post("/signup", h.SignUp)
 
-	return r
+		// Need authentication
+		r.With(h.AuthorizationMiddleware).Get("/", h.User)
+	})
+
+	// Swagger Docs
+	rs := chi.NewRouter()
+	rs.Handle("/swagger/*", httpSwagger.Handler())
+
+	// Mount recipes and users under /api and merge with swagger routes
+	rs.Mount("/api", r)
+
+	return rs
 }

@@ -1,1 +1,1 @@
-*.go -text diff=golang
+static/* linguist-vendored

@@ -127,6 +127,24 @@ Available Parameters explanation:
 - term : text search in titles
 - page : page number
 
+### Swagger Docs
+You can view swagger docs after running the app here [http://127.0.0.1:8080/swagger/index.html](http://127.0.0.1:8080/swagger/index.html)
+
+To generate/update swagger docs project uses https://github.com/swaggo/swag you can install the cli using 
+the following command
+```bash
+go get github.com/swaggo/swag/cmd/swag
+```
+
+Update swagger docs
+```bash
+swag init -g cmd/api/main.go -o api/swagger
+```
+or
+```bash
+make swag
+```
+
 ## Authors
 * **George Lavdanis** - *Initial work* - [georlav](https://github.com/georlav)
 

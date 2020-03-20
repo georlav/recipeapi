@@ -28,15 +28,15 @@ retrieved from there.
  * Go
  * Docker
 
+### Starting database container
+```bash
+docker-compose up -d
+```
+
 ### Setup databases
 Set up required databases. At each execution recreates database and re imports data.
 ```bash
 make db
-```
-
-### Starting database container
-```bash
-docker-compose up -d
 ```
 
 Set up/reset only dev-db

@@ -9,8 +9,8 @@ type RecipesRequest struct {
 
 // CreateRecipeRequest object to map incoming request for Create handler
 type RecipeCreateRequest struct {
-	Title       string   `validate:"required,min=2" schema:"title"`
-	URL         string   `validate:"required,min=10" schema:"url"`
+	Title       string   `validate:"required,min=2"`
+	URL         string   `validate:"required,min=10"`
 	Thumbnail   string   `schema:"thumbnail"`
-	Ingredients []string `validate:"required,max=30,min=1" schema:"ingredients"`
+	Ingredients []string `validate:"required,max=30,min=1"`
 }

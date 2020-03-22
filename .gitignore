@@ -1,4 +1,11 @@
 .idea
+.vscode
+
 /main
+
 /data
+
 /config.json
+/config.toml
+/config.yaml
+/config.yml

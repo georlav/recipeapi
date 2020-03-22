@@ -14,7 +14,7 @@ import (
 
 func TestMain(m *testing.M) {
 	// load config
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		log.Fatal(err)
 	}

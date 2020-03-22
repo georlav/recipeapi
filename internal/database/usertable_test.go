@@ -34,7 +34,7 @@ func TestUserTable_Get(t *testing.T) {
 		},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,7 +88,7 @@ func TestUserTable_GetByUsername(t *testing.T) {
 		},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -142,7 +142,7 @@ func TestUserTable_Insert(t *testing.T) {
 		},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		log.Fatal(err)
 	}

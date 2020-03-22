@@ -42,7 +42,7 @@ jobs:
         mysql -h 127.0.0.1 --port 3316 -u root -ppass recipes_test < api/recipes-schema.sql
         mysql -h 127.0.0.1 --port 3316 -u root -ppass -e 'CREATE DATABASE IF NOT EXISTS recipes_handlers_test;'
         mysql -h 127.0.0.1 --port 3316 -u root -ppass recipes_handlers_test < api/recipes-schema.sql
-        cp config.json.dist config.json
+        cp config.yml.dist config.yml
         go test ./... -v -race -mod=vendor -coverprofile=coverage.txt -covermode=atomic
       
     - name: Upload Coverage

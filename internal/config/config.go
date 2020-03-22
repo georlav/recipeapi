@@ -7,15 +7,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-func init() {
-	//viper.SetDefault("token.ttl", 61)
-	//viper.SetDefault("server.readtimeout", 5)
-	//viper.SetDefault("server.writetimeout", 10)
-	//viper.SetDefault("server.idletimeout", 120)
-	//viper.SetDefault("database.maxidleconns", 5)
-	//viper.SetDefault("database.maxopenconns", 10)
-}
-
 // Config object
 type Config struct {
 	APP      APP

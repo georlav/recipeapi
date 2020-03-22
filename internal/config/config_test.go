@@ -39,7 +39,7 @@ func TestLoad(t *testing.T) {
 		}
 	})
 
-	t.Run("Env should override config value", func(t *testing.T) {
+	t.Run("Should override config value with environmental value", func(t *testing.T) {
 		os.Setenv("RECIPE_TOKEN_TTL", "66")
 		defer os.Unsetenv("RECIPE_TOKEN_TTL")
 

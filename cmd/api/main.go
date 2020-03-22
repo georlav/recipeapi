@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	cfg, err := config.Load("config.json")
+	cfg, err := config.New("config")
 	if err != nil {
 		log.Fatalf("Failed to load configuration, %s", err)
 	}

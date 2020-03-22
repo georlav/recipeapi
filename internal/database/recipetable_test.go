@@ -7,9 +7,8 @@ import (
 	"log"
 	"testing"
 
-	"github.com/georlav/recipeapi/internal/database"
-
 	"github.com/georlav/recipeapi/internal/config"
+	"github.com/georlav/recipeapi/internal/database"
 )
 
 func TestNewRecipeTable_Get(t *testing.T) {
@@ -183,7 +182,7 @@ func TestRecipeTable_Paginate(t *testing.T) {
 }
 
 func db() (*database.Database, error) {
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		log.Fatal(err)
 	}

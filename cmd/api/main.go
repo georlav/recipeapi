@@ -32,8 +32,7 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	// Load configuration from file
-	cfg, err := config.Load("config.json")
+	cfg, err := config.New("config")
 	if err != nil {
 		panic(fmt.Sprintf("Failed to load configuration, %s", err))
 	}

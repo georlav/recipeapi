@@ -12,7 +12,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestNewDatabase(t *testing.T) {
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		log.Fatal(err)
 	}

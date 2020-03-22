@@ -183,7 +183,7 @@ func TestRecipeTable_Paginate(t *testing.T) {
 }
 
 func db() (*database.Database, error) {
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -11,6 +11,7 @@ require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.4.2
+	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.5.1 // indirect
 	golang.org/x/net v0.0.0-20190611141213-3f473d35a33a // indirect
 	golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527 // indirect

@@ -29,7 +29,7 @@ func TestHandler_Recipe(t *testing.T) {
 		{0, "", http.StatusBadRequest},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,7 +112,7 @@ func TestHandler_Recipes(t *testing.T) {
 		{url.Values{"page": []string{"1"}, "ingredient": []string{"Spaghetti code"}}, 0},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -195,7 +195,7 @@ func TestHandler_Create(t *testing.T) {
 		},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		t.Fatal(err)
 	}

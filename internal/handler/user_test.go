@@ -42,7 +42,7 @@ func TestHandler_User(t *testing.T) {
 		},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func TestHandler_SignIn(t *testing.T) {
 		},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -176,7 +176,7 @@ func TestHandler_SignUp(t *testing.T) {
 		},
 	}
 
-	cfg, err := config.Load("testdata/config.json")
+	cfg, err := config.New("config", "testdata")
 	if err != nil {
 		t.Fatal(err)
 	}

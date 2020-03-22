@@ -1,0 +1,24 @@
+app:
+  version: "1"
+database:
+  database: recipes_test
+  host: 127.0.0.1
+  maxidleconns: 5
+  maxopenconns: 10
+  password: pass
+  port: 3316
+  username: root
+logger:
+  enablestdout: true
+  loglevel: 6
+  reportcaller: true
+server:
+  host: 127.0.0.1
+  idletimeout: 30
+  port: 8080
+  readtimeout: 30
+  scheme: http
+  writetimeout: 30
+token:
+  secret: 2s5u8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@McQfTjWnZr4u7x!A%C*F-JaNdRgUkXp2s5v8y/B?E(G+KbPeShVmYq3t6w9z$C&F)J@McQfTjWnZr4u7x!A%D*G-KaPdRgUkXp2s5v8y/B?E(H+MbQeThVmYq3t6w9z$C&F)J@NcRfUjXnZr4u7x!A%D*G-KaPdSgVkYp3s6v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*
+  ttl: 60

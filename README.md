@@ -28,15 +28,15 @@ retrieved from there.
  * Go
  * Docker
 
-### Starting database container
-```bash
-docker-compose up -d
-```
-
 ### Setup databases
 Set up required databases. At each execution recreates database and re imports data.
 ```bash
 make db
+```
+
+### Starting database container
+```bash
+docker-compose up -d
 ```
 
 Set up/reset only dev-db
@@ -49,8 +49,21 @@ make db-test
 ```
 
 ### Configuration
-Most of the project values can be configured by editing config.json, config file is located under the project 
-root folder.
+Most of the project values can be configured by editing config.yaml, config file is located under the project 
+root folder. 
+
+#####You can use the following config format types
+* JSON 
+* TOML
+* YAML
+* HCL
+* envfile
+
+You can override any config value by using environmental values, for example to override token.ttl you need to set an 
+environmental variable with key RECIPE_TOKEN_TTL
+
+Project is using [Viper config](https://github.com/spf13/viper) a complete configuration solution for Go 
+applications
 
 ### Running tests
 ```bash
@@ -75,6 +88,8 @@ if you are behind a corporate firewall using a custom certificate use
 ```bash
 make lint-insecure
 ```
+
+Project is using [golang lint](https://github.com/golang/lint) linter
 
 ### Usage examples
 
@@ -130,8 +145,8 @@ Available Parameters explanation:
 ### Swagger Docs
 You can view swagger docs after running the app here [http://127.0.0.1:8080/swagger/index.html](http://127.0.0.1:8080/swagger/index.html)
 
-To generate/update swagger docs project uses https://github.com/swaggo/swag you can install the cli using 
-the following command
+Project is using [swaggo/swag](https://github.com/swaggo/swag) to generate/update swagger docs you can install 
+the cli using the following command
 ```bash
 go get github.com/swaggo/swag/cmd/swag
 ```

@@ -52,7 +52,7 @@ make db-test
 Most of the project values can be configured by editing config.yaml, config file is located under the project 
 root folder. 
 
-#####You can use the following config format types
+#### You can use the following config format types
 * JSON 
 * TOML
 * YAML

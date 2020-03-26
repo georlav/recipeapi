@@ -23,7 +23,10 @@ func TestRoutes(t *testing.T) {
 		"/api/user/":               {},
 		"/api/user/signin":         {},
 		"/api/user/signup":         {},
+<<<<<<< HEAD
 		"/swagger/*":               {},
+=======
+>>>>>>> 09-Authentication
 	}
 
 	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {

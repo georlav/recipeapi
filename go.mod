@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.0.2
-	github.com/go-chi/chi v4.0.3+incompatible
+	github.com/go-chi/chi v4.0.4+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/text v0.2.0 // indirect

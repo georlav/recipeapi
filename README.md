@@ -23,7 +23,7 @@ retrieved from there.
  * 07-Handler-real-data
  * 08-Middleware
  * 09-Authentication
- * 10-Swagger Documentation
+ * 10-Swagger
 
 ### Prerequisites
  * Go

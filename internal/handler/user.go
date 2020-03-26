@@ -7,7 +7,6 @@ import (
 
 	"github.com/georlav/recipeapi/internal/database"
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // User godoc
@@ -58,8 +57,7 @@ func (h Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate sign up request
-	v := validator.New()
-	if err := v.Struct(si); err != nil {
+	if err := h.validate.Struct(si); err != nil {
 		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
@@ -116,8 +114,7 @@ func (h Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate sign up request
-	v := validator.New()
-	if err := v.Struct(u); err != nil {
+	if err := h.validate.Struct(u); err != nil {
 		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}

@@ -7,7 +7,6 @@ import (
 
 	"github.com/georlav/recipeapi/internal/database"
 	"github.com/go-chi/chi"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 func (h *Handler) Recipe(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +29,19 @@ func (h *Handler) Recipe(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 	// Map request to struct
-	rr := RecipesRequest{}
-	if err := h.decoder.Decode(&rr, r.URL.Query()); err != nil {
+	rr := RecipesRequest{Page: 1}
+	if err := h.schema.Decode(&rr, r.URL.Query()); err != nil {
 		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}
 
-	// Pass request data to filters
+	// validate data in struct
+	if err := h.validate.Struct(rr); err != nil {
+		h.respondError(w, APIError{Message: err.Error(), StatusCode: http.StatusBadRequest})
+		return
+	}
+
+	// Create db filters from validated request data
 	filters := database.RecipeFilters{
 		Term:        rr.Term,
 		Ingredients: rr.Ingredients,
@@ -64,8 +69,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate data in struct
-	v := validator.New()
-	if err := v.Struct(rc); err != nil {
+	if err := h.validate.Struct(rc); err != nil {
 		h.respondError(w, APIError{Message: http.StatusText(http.StatusBadRequest), StatusCode: http.StatusBadRequest})
 		return
 	}

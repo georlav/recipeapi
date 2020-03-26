@@ -89,27 +89,31 @@ func TestHandler_Recipe(t *testing.T) {
 
 func TestHandler_Recipes(t *testing.T) {
 	testData := []struct {
-		params  url.Values
-		results int
+		params     url.Values
+		results    int
+		statusCode int
 	}{
-		{url.Values{"page": []string{"0"}}, 10},
-		{url.Values{"page": []string{"1"}}, 10},
-		{url.Values{"page": []string{"2"}}, 10},
-		{url.Values{"page": []string{"3"}}, 2},
-		{url.Values{"page": []string{"1"}, "term": []string{"Ginger Champagne"}}, 1},
-		{url.Values{"page": []string{"1"}, "term": []string{"potato"}}, 4},
-		{url.Values{"page": []string{"1"}, "term": []string{"onion"}}, 1},
-		{url.Values{"page": []string{"1"}, "term": []string{"onion"}, "ingredient": []string{"onions"}}, 1},
-		{url.Values{"page": []string{"1"}, "ingredient": []string{"onions"}}, 8},
-		{url.Values{"page": []string{"1"}, "ingredient": []string{"eggs"}}, 5},
-		{url.Values{"page": []string{"1"}, "ingredient": []string{"onions", "eggs"}}, 10},
-		{url.Values{"page": []string{"2"}, "ingredient": []string{"onions", "eggs"}}, 2},
-		{url.Values{"page": []string{"1"}, "term": []string{"pork"}}, 3},
-		{url.Values{"page": []string{"1"}, "term": []string{"pork"}, "ingredient": []string{"garlic"}}, 2},
-		{url.Values{"page": []string{"1"}, "term": []string{"pork"}, "ingredient": []string{"garlic", "brown sugar"}}, 2},
-		{url.Values{"page": []string{"1"}, "term": []string{"park"}, "ingredient": []string{"garlic", "brown sugar"}}, 0},
-		{url.Values{"page": []string{"1"}, "term": []string{"potato"}, "ingredient": []string{"eggs"}}, 1},
-		{url.Values{"page": []string{"1"}, "ingredient": []string{"Spaghetti code"}}, 0},
+		{url.Values{"page": []string{"0"}}, 10, http.StatusOK},
+		{url.Values{"page": []string{"1"}}, 10, http.StatusOK},
+		{url.Values{"page": []string{"2"}}, 10, http.StatusOK},
+		{url.Values{"page": []string{"3"}}, 2, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"Ginger Champagne"}}, 1, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"potato"}}, 4, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"onion"}}, 1, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"onion"}, "ingredient": []string{"onions"}}, 1, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "ingredient": []string{"onions"}}, 8, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "ingredient": []string{"eggs"}}, 5, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "ingredient": []string{"onions", "eggs"}}, 10, http.StatusOK},
+		{url.Values{"page": []string{"2"}, "ingredient": []string{"onions", "eggs"}}, 2, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"pork"}}, 3, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"pork"}, "ingredient": []string{"garlic"}}, 2, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"pork"}, "ingredient": []string{"garlic", "brown sugar"}}, 2, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"park"}, "ingredient": []string{"garlic", "brown sugar"}}, 0, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "term": []string{"potato"}, "ingredient": []string{"eggs"}}, 1, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "ingredient": []string{"Spaghetti code"}}, 0, http.StatusOK},
+		{url.Values{"page": []string{"1"}, "ingredient": []string{"1", "2", "3", "4", "5", "6"}}, 0, http.StatusBadRequest},
+		{url.Values{"term": []string{"ab"}}, 0, http.StatusBadRequest},
+		{url.Values{"page": []string{"-5"}}, 0, http.StatusBadRequest},
 	}
 
 	cfg, err := config.New("config", "testdata")
@@ -136,8 +140,8 @@ func TestHandler_Recipes(t *testing.T) {
 			rh := http.HandlerFunc(h.Recipes)
 			rh.ServeHTTP(rr, req)
 
-			if http.StatusOK != rr.Code {
-				t.Fatalf("Wrong status code got %d expected %d, %s", http.StatusOK, rr.Code, rr.Body.String())
+			if rr.Code != tc.statusCode {
+				t.Fatalf("Wrong status code got %d expected %d, %s", rr.Code, tc.statusCode, rr.Body.String())
 			}
 			if actualLen := strings.Count(rr.Body.String(), "createdAt"); tc.results != actualLen {
 				t.Fatalf("Expected %d results got %d", tc.results, actualLen)
@@ -153,20 +157,20 @@ func TestHandler_Create(t *testing.T) {
 		expectedError string
 	}{
 		{
-			`{"Title":"Ginger Champagne2","URL":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
-"Ingredients":["champagne","ginger","ice","vodka"],"Thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
+			`{"title":"Ginger Champagne2","url":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
+"ingredients":["champagne","ginger","ice","vodka"],"thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
 			http.StatusCreated,
 			"",
 		},
 		{
-			`{"Title":"Ginger Champagne2","URL":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
-"Ingredients":["champagne","ginger","ice","vodka"],"Thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
+			`{"title":"Ginger Champagne2","url":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
+"ingredients":["champagne","ginger","ice","vodka"],"thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
 			http.StatusInternalServerError,
 			"failed to create recipe",
 		},
 		{
-			`{"URL":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
-"Ingredients":["champagne","ginger","ice","vodka"],"Thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
+			`{"url":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
+"ingredients":["champagne","ginger","ice","vodka"],"thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
 			http.StatusBadRequest,
 			`Field validation for 'Title' failed on the 'required' tag`,
 		},
@@ -177,14 +181,14 @@ func TestHandler_Create(t *testing.T) {
 			`Field validation for 'Ingredients' failed on the 'min' tag`,
 		},
 		{
-			`{"Title":"t", "URL":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
-"Ingredients":[],"Thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
+			`{"title":"t", "URL":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
+"ingredients":[],"thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
 			http.StatusBadRequest,
 			`Field validation for 'Title' failed on the 'min' tag`,
 		},
 		{
-			`{"Title":"Ginger Champagne2", "URL":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
-"Thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
+			`{"title":"Ginger Champagne2", "url":"http://allrecipes.com/Recipe/Ginger-Champagne/Detail.aspx",
+"thumbnail":"http://img.recipepuppy.com/1.jpg"}`,
 			http.StatusBadRequest,
 			`Field validation for 'Ingredients' failed on the 'required' tag"`,
 		},

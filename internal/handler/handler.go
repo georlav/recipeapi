@@ -10,6 +10,7 @@ import (
 	"github.com/georlav/recipeapi/internal/config"
 	"github.com/georlav/recipeapi/internal/database"
 	"github.com/georlav/recipeapi/internal/logger"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
 
@@ -18,18 +19,20 @@ type contextKey string
 const CtxKeyToken contextKey = "token"
 
 type Handler struct {
-	db      *database.Database
-	decoder *schema.Decoder
-	cfg     *config.Config
-	log     *logger.Logger
+	db       *database.Database
+	cfg      *config.Config
+	log      *logger.Logger
+	schema   *schema.Decoder
+	validate *validator.Validate
 }
 
 func NewHandler(db *database.Database, c *config.Config, l *logger.Logger) *Handler {
 	return &Handler{
-		db:      db,
-		decoder: schema.NewDecoder(),
-		cfg:     c,
-		log:     l,
+		db:       db,
+		cfg:      c,
+		log:      l,
+		schema:   schema.NewDecoder(),
+		validate: validator.New(),
 	}
 }
 

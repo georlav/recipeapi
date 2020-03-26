@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 	// Import data
 	for i := range data.Recipes {
 		if _, err := db.Recipe.Insert(data.Recipes[i]); err != nil {
-			log.Fatalf("failed to insert test data, %s", err)
+			log.Printf("failed to insert test data, %s\n", err)
 		}
 	}
 

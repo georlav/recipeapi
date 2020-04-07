@@ -4,6 +4,7 @@ github.com/fsnotify/fsnotify
 ## explicit
 github.com/gemnasium/logrus-graylog-hook/v3
 # github.com/go-chi/chi v4.0.4+incompatible
+## explicit
 github.com/go-chi/chi
 github.com/go-chi/chi/middleware
 # github.com/hashicorp/hcl v1.0.0
@@ -52,10 +53,13 @@ github.com/spf13/viper
 ## explicit
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
+# golang.org/x/net v0.0.0-20190611141213-3f473d35a33a
+## explicit
 # golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527
 ## explicit
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
+## explicit
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
 # gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f

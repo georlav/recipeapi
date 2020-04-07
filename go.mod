@@ -1,6 +1,6 @@
 module github.com/georlav/recipeapi
 
-go 1.13
+go 1.14
 
 require (
 	github.com/gemnasium/logrus-graylog-hook/v3 v3.0.2

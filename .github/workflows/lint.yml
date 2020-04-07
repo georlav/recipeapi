@@ -9,10 +9,10 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.13
+          go-version: 1.14
 
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Run linter
-        run: docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.23.6 golangci-lint run
+        run: docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.24.0 golangci-lint run

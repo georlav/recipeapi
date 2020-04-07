@@ -7,9 +7,9 @@ build:
 make swag:
 	swag init -g cmd/api/main.go -o api/swagger
 lint:
-	docker run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.23.6 golangci-lint run
+	docker run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.24.0 golangci-lint run
 lint-insecure:
-	docker run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.23.6 git config --global http.sslVerify false && golangci-lint run
+	docker run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.24.0 git config --global http.sslVerify false && golangci-lint run
 db-dev:
 	docker cp api/recipes-schema.sql mysql:/recipes-schema.sql
 	docker cp api/recipes-data.sql mysql:/recipes-data.sql

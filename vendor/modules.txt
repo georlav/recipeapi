@@ -1,4 +1,5 @@
 # github.com/fsnotify/fsnotify v1.4.9
+## explicit
 github.com/fsnotify/fsnotify
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
@@ -14,28 +15,39 @@ github.com/hashicorp/hcl/json/token
 # github.com/magiconair/properties v1.8.1
 github.com/magiconair/properties
 # github.com/mitchellh/mapstructure v1.2.2
+## explicit
 github.com/mitchellh/mapstructure
 # github.com/pelletier/go-toml v1.6.0
+## explicit
 github.com/pelletier/go-toml
 # github.com/spf13/afero v1.2.2
+## explicit
 github.com/spf13/afero
 github.com/spf13/afero/mem
 # github.com/spf13/cast v1.3.1
+## explicit
 github.com/spf13/cast
 # github.com/spf13/jwalterweatherman v1.1.0
+## explicit
 github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.5
+## explicit
 github.com/spf13/pflag
 # github.com/spf13/viper v1.6.2
+## explicit
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
 # golang.org/x/sys v0.0.0-20200320181252-af34d8274f85
+## explicit
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
+## explicit
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
 # gopkg.in/ini.v1 v1.55.0
+## explicit
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.2.8
+## explicit
 gopkg.in/yaml.v2

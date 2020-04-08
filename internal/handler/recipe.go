@@ -36,8 +36,14 @@ func (h *Handler) Recipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	resp := RecipeResponseItem{}
+	if err := EncodeEntity(recipe, &resp); err != nil {
+		h.respondError(w, err)
+		return
+	}
+
 	// Respond
-	h.respond(w, NewRecipeResponse(recipe), http.StatusOK)
+	h.respond(w, resp, http.StatusOK)
 }
 
 // Recipes godoc
@@ -79,8 +85,13 @@ func (h Handler) Recipes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	resp := RecipesResponse{Metadata: Metadata{Total: total}}
+	if err := EncodeEntities(recipes, &resp, "Data"); err != nil {
+		h.respondError(w, err)
+		return
+	}
+
 	// Respond
-	resp := NewRecipesResponse("Recipe Puppy Clone", h.cfg.APP.Version, recipes, total)
 	h.respond(w, resp, http.StatusOK)
 }
 

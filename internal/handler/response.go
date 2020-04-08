@@ -1,14 +1,15 @@
 package handler
 
 import (
-	"github.com/georlav/recipeapi/internal/database"
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
+	"fmt"
+	"reflect"
 )
 
 // RecipeResponse recipe response object
 type RecipesResponse struct {
-	Title    string               `json:"title"`
-	Version  string               `json:"version"`
-	Href     string               `json:"href"`
 	Data     *RecipeResponseItems `json:"data"`
 	Metadata Metadata             `json:"metadata"`
 }
@@ -18,60 +19,8 @@ type Metadata struct {
 	Total int64
 }
 
-// NewRecipesResponse
-func NewRecipesResponse(title, version string, r database.Recipes, total int64) RecipesResponse {
-	rr := RecipesResponse{
-		Title:   title,
-		Version: version,
-		Metadata: Metadata{
-			Total: total,
-		},
-	}
-
-	var items RecipeResponseItems
-	for i := range r {
-		item := RecipeResponseItem{
-			ID:        r[i].ID,
-			Title:     r[i].Title,
-			Thumbnail: r[i].Thumbnail,
-			CreatedAt: r[i].CreatedAt,
-			UpdatedAt: r[i].UpdatedAt,
-		}
-		for j := range r[i].Ingredients {
-			item.Ingredients = append(item.Ingredients, IngredientResponseItem{
-				ID:   r[i].Ingredients[j].ID,
-				Name: r[i].Ingredients[j].Name,
-			})
-		}
-		items = append(items, item)
-	}
-	rr.Data = &items
-
-	return rr
-}
-
 // RecipeResponseItem object to map recipe items
 type RecipeResponseItems []RecipeResponseItem
-
-// NewRecipesResponse
-func NewRecipeResponse(r *database.Recipe) RecipeResponseItem {
-	ingredients := IngredientResponse{}
-	for i := range r.Ingredients {
-		ingredients = append(ingredients, IngredientResponseItem{
-			ID:   r.Ingredients[i].ID,
-			Name: r.Ingredients[i].Name,
-		})
-	}
-
-	return RecipeResponseItem{
-		ID:          r.ID,
-		Title:       r.Title,
-		Ingredients: ingredients,
-		Thumbnail:   r.Thumbnail,
-		CreatedAt:   r.CreatedAt,
-		UpdatedAt:   r.UpdatedAt,
-	}
-}
 
 // RecipeResponseItem object to map a recipe item
 type RecipeResponseItem struct {
@@ -96,4 +45,55 @@ type ErrorResponse struct {
 	Message       string `json:"error"`
 	StatusCode    int    `json:"statusCode"`
 	StatusMessage string `json:"statusMessage"`
+}
+
+// EncodeEntity generic function to map a database entity to a response object
+// All fields in entity and response that needed to be mapped should be public
+// Response MUST be a pointer to a response struct
+func EncodeEntity(entity, response interface{}) error {
+	var b bytes.Buffer
+	if err := gob.NewEncoder(&b).Encode(entity); err != nil {
+		return err
+	}
+
+	return gob.NewDecoder(bytes.NewBuffer(b.Bytes())).Decode(response)
+}
+
+// EncodeEntities generic function to map a slice of database entities to a response field of a response struct
+// All entity fields that will be mapped need to be public, response target field should be same type with entities
+// slice, response MUST be a pointer to a response struct
+func EncodeEntities(entities, response interface{}, responseField string) error {
+	eVal := reflect.ValueOf(entities)
+	if eVal.Kind() == reflect.Ptr {
+		eVal = eVal.Elem()
+	}
+	if eVal.Kind() != reflect.Slice {
+		return fmt.Errorf("entities argument is expected to be a slice got %s", eVal.Kind())
+	}
+
+	respVal := reflect.ValueOf(response)
+	if respVal.Kind() != reflect.Ptr {
+		return fmt.Errorf("response argument should be a pointer to a response")
+	}
+	if respVal.Kind() == reflect.Ptr {
+		respVal = respVal.Elem()
+	}
+
+	respField, ok := respVal.Type().FieldByName(responseField)
+	if !ok {
+		return fmt.Errorf("%s field could not be found in response. %v", responseField, respField)
+	}
+
+	tmpResp := map[string]interface{}{
+		responseField: entities,
+	}
+	b, err := json.Marshal(tmpResp)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(b, response); err != nil {
+		return err
+	}
+
+	return nil
 }

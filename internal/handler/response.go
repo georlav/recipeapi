@@ -3,7 +3,6 @@ package handler
 import (
 	"bytes"
 	"encoding/gob"
-	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -101,32 +100,23 @@ func EncodeEntities(entities, response interface{}, responseField string) error 
 		eVal = eVal.Elem()
 	}
 	if eVal.Kind() != reflect.Slice {
-		return fmt.Errorf("entities argument is expected to be a slice got %s", eVal.Kind())
+		return fmt.Errorf("entities argument is expected to be a slice of entities got %s", eVal.Kind())
+	}
+
+	var b bytes.Buffer
+	if err := gob.NewEncoder(&b).EncodeValue(eVal); err != nil {
+		return err
 	}
 
 	respVal := reflect.ValueOf(response)
 	if respVal.Kind() != reflect.Ptr {
 		return fmt.Errorf("response argument should be a pointer to a response")
 	}
-	if respVal.Kind() == reflect.Ptr {
-		respVal = respVal.Elem()
-	}
 
-	respField, ok := respVal.Type().FieldByName(responseField)
-	if !ok {
+	respField := respVal.Elem().FieldByName(responseField)
+	if !respField.IsValid() {
 		return fmt.Errorf("%s field could not be found in response. %v", responseField, respField)
 	}
 
-	tmpResp := map[string]interface{}{
-		responseField: entities,
-	}
-	b, err := json.Marshal(tmpResp)
-	if err != nil {
-		return err
-	}
-	if err := json.Unmarshal(b, response); err != nil {
-		return err
-	}
-
-	return nil
+	return gob.NewDecoder(bytes.NewBuffer(b.Bytes())).DecodeValue(respField)
 }

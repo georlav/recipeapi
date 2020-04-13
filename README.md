@@ -1,5 +1,5 @@
-![Tests](https://github.com/georlav/migrate/workflows/Tests/badge.svg?branch=master)
-![GolangCI](https://github.com/georlav/migrate/workflows/GolangCI/badge.svg?branch=master)
+![Tests](https://github.com/georlav/recipeapi/workflows/Tests/badge.svg?branch=master)
+![GolangCI](https://github.com/georlav/recipeapi/workflows/GolangCI/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/georlav/recipeapi/branch/master/graph/badge.svg)](https://codecov.io/gh/georlav/recipeapi)
 [![Go Report Card](https://goreportcard.com/badge/github.com/georlav/recipeapi)](https://goreportcard.com/report/github.com/georlav/recipeapi)
 [![](https://img.shields.io/badge/unicorn-approved-ff69b4.svg)](https://www.youtube.com/watch?v=9auOCbH5Ns4)

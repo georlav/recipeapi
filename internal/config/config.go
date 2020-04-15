@@ -62,24 +62,25 @@ type Token struct {
 // New returns a new config, by default it looks for config files in the current working directory, if your config
 // is locate somewhere path the path as second argument
 func New(name string, path ...string) (*Config, error) {
+	v := viper.New()
 	// Setup file to read
 	paths := append([]string{"."}, path...)
 	for i := range paths {
-		viper.AddConfigPath(paths[i])
+		v.AddConfigPath(paths[i])
 	}
-	viper.SetConfigName(name)
+	v.SetConfigName(name)
 
 	// Read ENV variables with recipe prefix
-	viper.SetEnvPrefix("recipe")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.AutomaticEnv()
+	v.SetEnvPrefix("recipe")
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err != nil {
+	if err := v.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("failed to read config, %w", err)
 	}
 
 	c := Config{}
-	if err := viper.Unmarshal(&c); err != nil {
+	if err := v.Unmarshal(&c); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config, %w", err)
 	}
 	return &c, nil

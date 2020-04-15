@@ -1,5 +1,5 @@
-![Tests](https://github.com/georlav/migrate/workflows/Tests/badge.svg?branch=master)
-![GolangCI](https://github.com/georlav/migrate/workflows/GolangCI/badge.svg?branch=master)
+![Test](https://github.com/georlav/recipeapi/workflows/Test/badge.svg?branch=master)
+![GolangCI](https://github.com/georlav/recipeapi/workflows/GolangCI/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/georlav/recipeapi/branch/master/graph/badge.svg)](https://codecov.io/gh/georlav/recipeapi)
 [![Go Report Card](https://goreportcard.com/badge/github.com/georlav/recipeapi)](https://goreportcard.com/report/github.com/georlav/recipeapi)
 [![](https://img.shields.io/badge/unicorn-approved-ff69b4.svg)](https://www.youtube.com/watch?v=9auOCbH5Ns4)
@@ -23,20 +23,21 @@ retrieved from there.
  * 07-Handler-real-data
  * 08-Middleware
  * 09-Authentication
+ * 10-Swagger
 
 ### Prerequisites
  * Go
  * Docker
 
+### Starting database container
+```bash
+docker-compose up -d
+```
+
 ### Setup databases
 Set up required databases. At each execution recreates database and re imports data.
 ```bash
 make db
-```
-
-### Starting database container
-```bash
-docker-compose up -d
 ```
 
 Set up/reset only dev-db
@@ -52,7 +53,7 @@ make db-test
 Most of the project values can be configured by editing config.yaml, config file is located under the project 
 root folder. 
 
-#####You can use the following config format types
+#### You can use the following config format types
 * JSON 
 * TOML
 * YAML
@@ -153,11 +154,11 @@ go get github.com/swaggo/swag/cmd/swag
 
 Update swagger docs
 ```bash
-swag init -g cmd/api/main.go -o api/swagger
+swag init --dir cmd/api --output api/swagger
 ```
 or
 ```bash
-make swag
+make swagger
 ```
 
 ## Authors

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"flag"
 	"fmt"
 	"strings"
 
@@ -62,25 +63,61 @@ type Token struct {
 // New returns a new config, by default it looks for config files in the current working directory, if your config
 // is locate somewhere path the path as second argument
 func New(name string, path ...string) (*Config, error) {
+	v := viper.New()
 	// Setup file to read
 	paths := append([]string{"."}, path...)
 	for i := range paths {
-		viper.AddConfigPath(paths[i])
+		v.AddConfigPath(paths[i])
 	}
-	viper.SetConfigName(name)
+	v.SetConfigName(name)
 
 	// Read ENV variables with recipe prefix
-	viper.SetEnvPrefix("recipe")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.AutomaticEnv()
+	v.SetEnvPrefix("recipe")
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err != nil {
+	if err := v.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("failed to read config, %w", err)
 	}
 
+	// Override values using cli arguments
+	setFlags(v)
+
 	c := Config{}
-	if err := viper.Unmarshal(&c); err != nil {
+	if err := v.Unmarshal(&c); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config, %w", err)
 	}
 	return &c, nil
+}
+
+// Create flags for available options (integers, strings, booleans), use cli arguments to override config values
+func setFlags(v *viper.Viper) {
+	keys := v.AllKeys()
+	for i := range keys {
+		k := v.Get(keys[i])
+		switch k.(type) {
+		case int, int8, int16, int32:
+			v.Set(
+				keys[i],
+				*flag.Int(keys[i], k.(int), fmt.Sprintf("Sets value for %s", keys[i])),
+			)
+		case int64:
+			v.Set(
+				keys[i],
+				*flag.Int64(keys[i], k.(int64), fmt.Sprintf("Sets value for %s", keys[i])),
+			)
+		case string:
+			v.Set(
+				keys[i],
+				flag.String(keys[i], k.(string), fmt.Sprintf("Sets value for %s", keys[i])),
+			)
+		case bool:
+			v.Set(
+				keys[i],
+				*flag.Bool(keys[i], k.(bool), fmt.Sprintf("Sets value for %s", keys[i])),
+			)
+		}
+	}
+
+	flag.Parse()
 }

@@ -4,8 +4,8 @@ test:
 	go test ./... -v -race -cover -count=1
 build:
 	go build -ldflags "-s -w" cmd/api/main.go
-make swag:
-	swag init -g cmd/api/main.go -o api/swagger
+swagger:
+	swag init --dir cmd/api --output api/swagger
 lint:
 	docker run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:v1.24.0 golangci-lint run
 lint-insecure:

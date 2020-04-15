@@ -154,11 +154,11 @@ go get github.com/swaggo/swag/cmd/swag
 
 Update swagger docs
 ```bash
-swag init -g cmd/api/main.go -o api/swagger
+swag init --dir cmd/api --output api/swagger
 ```
 or
 ```bash
-make swag
+make swagger
 ```
 
 ## Authors
